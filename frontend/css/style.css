@@ -188,13 +188,15 @@ body {
     text-transform: uppercase;
 }
 
-/* Contenuto centrato rispetto all'intera viewport, con padding sinistro pari alla sidebar */
+/* Contenuto centrato rispetto all'intera viewport */
 #main-content {
-    width: 100%;
+    position: absolute;
+    left: 80px;
+    right: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 48px 20px 80px 100px;
+    padding: 48px 20px 80px;
     min-height: 100vh;
 }
 
@@ -948,7 +950,8 @@ td.importo-negativo { color: var(--negative); font-weight: 500; }
     #sidebar { width: 60px; }
 
     #main-content {
-        padding: 24px 14px 60px 74px;
+        left: 60px;
+        padding: 24px 14px 60px;
     }
 
     header h1 { font-size: 1.3rem; }
@@ -1269,4 +1272,41 @@ td.importo-negativo { color: var(--negative); font-weight: 500; }
     border-color: var(--negative);
     color: var(--negative);
     background: var(--negative-soft);
+}
+
+/* ════════════════════════════════════════════════════
+   MODALE NUOVA CATEGORIA
+   ════════════════════════════════════════════════════ */
+.modal-categoria-btn-group {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+}
+
+.modal-btn-ghost {
+    flex: 1;
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 13px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.modal-btn-ghost:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.modal-btn { flex: 1; }
+
+#modal-nuova-categoria .modal-input-group input {
+    font-size: 1rem;
+    font-weight: 400;
+    text-align: left;
+    padding: 14px 16px;
 }

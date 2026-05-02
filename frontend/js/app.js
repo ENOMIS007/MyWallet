@@ -106,9 +106,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     document.getElementById("categoria").addEventListener("change", async function() {
         if (this.value === "aggiungi") {
-            const nuovoNome = prompt("Nome della nuova categoria:");
+            const isEntrata = document.getElementById("tipo").value === "true";
+            const nuovoNome = await apriModaleCategoria(isEntrata ? "entrata" : "uscita");
+
             if (nuovoNome && nuovoNome.trim() !== "") {
-                const isEntrata = document.getElementById("tipo").value === "true";
                 const tempId = Date.now();
                 if (isEntrata) categorieEntrate.push({ id: tempId, nome: nuovoNome.trim() });
                 else           categorieUscite.push({ id: tempId, nome: nuovoNome.trim() });
@@ -118,7 +119,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                     const cat   = lista.find(c => c.id === tempId);
                     if (cat) cat.id = Array.isArray(realCat) ? realCat[0].id : realCat.id;
                     localStorage.setItem('cache_categorie', JSON.stringify({ entrate: categorieEntrate, uscite: categorieUscite }));
-                    // Aggiorna la select con l'ID reale
                     aggiornaSelectCategorie(cat ? cat.id : null);
                 });
             } else {
@@ -1103,5 +1103,42 @@ function trasformaAnnoInSelect(instance) {
     instance.config.onYearChange = instance.config.onYearChange || [];
     instance.config.onYearChange.push(() => {
         select.value = instance.currentYear;
+    });
+}
+// ==========================================
+//   MODALE NUOVA CATEGORIA
+// ==========================================
+
+function apriModaleCategoria(tipo) {
+    return new Promise((resolve) => {
+        const modal    = document.getElementById("modal-nuova-categoria");
+        const input    = document.getElementById("input-nuova-categoria");
+        const btnSalva = document.getElementById("btn-salva-categoria");
+        const btnAnn   = document.getElementById("btn-annulla-categoria");
+        const sub      = document.getElementById("modal-categoria-sottotitolo");
+
+        sub.textContent = `Categoria di ${tipo === "entrata" ? "entrata" : "uscita"}.`;
+        input.value = "";
+        modal.style.display = "flex";
+        setTimeout(() => input.focus(), 50);
+
+        function chiudi(valore) {
+            modal.style.display = "none";
+            btnSalva.removeEventListener("click", onSalva);
+            btnAnn.removeEventListener("click", onAnnulla);
+            document.removeEventListener("keydown", onKeydown);
+            resolve(valore);
+        }
+
+        function onSalva() { chiudi(input.value.trim()); }
+        function onAnnulla() { chiudi(null); }
+        function onKeydown(e) {
+            if (e.key === "Enter") chiudi(input.value.trim());
+            if (e.key === "Escape") chiudi(null);
+        }
+
+        btnSalva.addEventListener("click", onSalva);
+        btnAnn.addEventListener("click", onAnnulla);
+        document.addEventListener("keydown", onKeydown);
     });
 }
