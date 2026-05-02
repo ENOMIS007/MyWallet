@@ -74,9 +74,19 @@ document.addEventListener("DOMContentLoaded", async () => {
             getCategorieEntrate(),
             getCategorieUscite(),
             caricaSaldo(),
-            caricaTransazioni(),
-            applicaProgrammate()  // applica le transazioni programmate scadute
+            caricaTransazioni()
         ]);
+
+        // Applica le programmate scadute in background — non blocca il caricamento
+        applicaProgrammate().then(async result => {
+            if (result && result.applicate > 0) {
+                // Se sono state applicate transazioni, ricarica saldo e lista
+                await caricaTransazioni();
+                await caricaSaldo();
+            }
+        }).catch(() => {
+            // Errore silenzioso — non blocca l'app
+        });
         categorieEntrate = entrate;
         categorieUscite  = uscite;
         localStorage.setItem('cache_categorie', JSON.stringify({ entrate, uscite }));

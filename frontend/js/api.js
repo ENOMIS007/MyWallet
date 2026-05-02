@@ -18,33 +18,55 @@ function authHeaders() {
 // ══════════════════════════════════════════
 //   REFRESH TOKEN
 //   Chiama /auth/refresh e salva i nuovi token.
-//   Se il refresh fallisce, rimanda al login.
+//   Se il refresh fallisce, pulisce lo storage e rimanda al login.
 // ══════════════════════════════════════════
 
+let _refreshPromise = null;
+
 async function refreshToken() {
-    const refresh = localStorage.getItem("refresh_token");
-    if (!refresh) {
-        window.location.href = "/login.html";
-        return false;
-    }
-    try {
-        const res  = await fetch(`${BASE_URL}/auth/refresh`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ refresh_token: refresh })
-        });
-        const data = await res.json();
-        if (!res.ok) {
-            window.location.href = "/login.html";
+    // Mutex: evita refresh simultanei
+    if (_refreshPromise) return _refreshPromise;
+
+    _refreshPromise = (async () => {
+        const refresh = localStorage.getItem("refresh_token");
+        if (!refresh) {
+            pulisciStorageERedirect();
             return false;
         }
-        localStorage.setItem("access_token",  data.access_token);
-        localStorage.setItem("refresh_token", data.refresh_token);
-        return true;
-    } catch {
-        window.location.href = "/login.html";
-        return false;
-    }
+        try {
+            const res  = await fetch(`${BASE_URL}/auth/refresh`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ refresh_token: refresh })
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                pulisciStorageERedirect();
+                return false;
+            }
+            localStorage.setItem("access_token",  data.access_token);
+            localStorage.setItem("refresh_token", data.refresh_token);
+            return true;
+        } catch {
+            pulisciStorageERedirect();
+            return false;
+        } finally {
+            _refreshPromise = null;
+        }
+    })();
+
+    return _refreshPromise;
+}
+
+function pulisciStorageERedirect() {
+    // Pulisce tutto prima del redirect così index.html non trova token scaduti
+    // e non riparte il loop
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+    localStorage.removeItem("user_id");
+    localStorage.removeItem("user_email");
+    localStorage.removeItem("cache_categorie");
+    window.location.href = "/login.html";
 }
 
 // ══════════════════════════════════════════
