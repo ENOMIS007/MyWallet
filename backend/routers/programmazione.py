@@ -7,7 +7,6 @@ bp = Blueprint("programmazione", __name__)
 
 
 def get_token():
-    """Estrae il JWT dall'header Authorization."""
     auth_header = request.headers.get("Authorization", "")
     if auth_header.startswith("Bearer "):
         return auth_header.split(" ", 1)[1]
@@ -15,7 +14,6 @@ def get_token():
 
 
 def get_user_id(token):
-    """Ricava lo user_id dal token JWT."""
     try:
         user = supabase.auth.get_user(token)
         return user.user.id
@@ -23,24 +21,37 @@ def get_user_id(token):
         return None
 
 
-def calcola_prossima_data(data_prossima: date, frequenza: str) -> date:
-    """
-    Calcola la data successiva in base alla frequenza.
-    Usa relativedelta per mesi/anni così gestisce correttamente
-    i mesi con diverso numero di giorni.
-    """
+def calcola_prossima_data(data_corrente: date, frequenza: str) -> date:
     if frequenza == "giornaliera":
-        return data_prossima + timedelta(days=1)
+        return data_corrente + timedelta(days=1)
     elif frequenza == "settimanale":
-        return data_prossima + timedelta(weeks=1)
+        return data_corrente + timedelta(weeks=1)
     elif frequenza == "mensile":
-        return data_prossima + relativedelta(months=1)
+        return data_corrente + relativedelta(months=1)
     elif frequenza == "annuale":
-        return data_prossima + relativedelta(years=1)
-    return data_prossima
+        return data_corrente + relativedelta(years=1)
+    return data_corrente
 
 
-# GET /programmate — restituisce tutte le transazioni programmate dell'utente
+def get_o_crea_categoria(db, user_id: str, nome: str, is_entrata: bool) -> int:
+    """
+    Cerca una categoria con quel nome per l'utente.
+    Se non esiste la crea. Restituisce l'id.
+    """
+    result = db.table("categoria").select("id").eq("nome", nome).execute()
+    if result.data:
+        return result.data[0]["id"]
+    # Crea la categoria
+    nuova = db.table("categoria").insert({
+        "nome":       nome,
+        "is_entrata": is_entrata,
+        "user_id":    user_id,
+        "is_default": False
+    }).execute()
+    return nuova.data[0]["id"]
+
+
+# GET /programmate
 @bp.route("/programmate", methods=["GET"])
 def get_programmate():
     token = get_token()
@@ -48,15 +59,13 @@ def get_programmate():
         return jsonify({"error": "Non autenticato"}), 401
     try:
         db = get_supabase_client(token)
-        result = db.table("transazione_programmata") \
-                   .select("*, categoria(nome)") \
-                   .execute()
+        result = db.table("transazione_programmata").select("*").execute()
         return jsonify(result.data)
     except Exception as e:
         return jsonify({"error": str(e)}), 401
 
 
-# POST /programmate — aggiunge una nuova transazione programmata
+# POST /programmate
 @bp.route("/programmate", methods=["POST"])
 def add_programmata():
     token = get_token()
@@ -68,23 +77,18 @@ def add_programmata():
         return jsonify({"error": "Token non valido"}), 401
 
     try:
-        db   = get_supabase_client(token)
+        db = get_supabase_client(token)
         data = request.get_json()
-
-        is_ricorrente = data.get("is_ricorrente", True)
-        frequenza     = data.get("frequenza") if is_ricorrente else None
-        data_inizio   = data.get("data_inizio")
+        data_inizio = data.get("data_inizio")
 
         nuova = {
-            "user_id":      user_id,
-            "nome":         data.get("nome"),
-            "soldi":        data.get("soldi"),
-            "id_categoria": data.get("id_categoria"),
-            "is_entrata":   data.get("is_entrata", False),
-            "is_ricorrente": is_ricorrente,
-            "frequenza":    frequenza,
-            "data_inizio":  data_inizio,
-            "data_prossima": data_inizio,  # la prima applicazione è alla data di inizio
+            "user_id":       user_id,
+            "nome":          data.get("nome"),
+            "soldi":         data.get("soldi"),
+            "is_entrata":    data.get("is_entrata", False),
+            "frequenza":     data.get("frequenza", "mensile"),
+            "data_inizio":   data_inizio,
+            "data_prossima": data_inizio,
         }
         result = db.table("transazione_programmata").insert(nuova).execute()
         return jsonify(result.data), 201
@@ -92,7 +96,7 @@ def add_programmata():
         return jsonify({"error": str(e)}), 400
 
 
-# DELETE /programmate/<id> — elimina una transazione programmata
+# DELETE /programmate/<id>
 @bp.route("/programmate/<string:programmata_id>", methods=["DELETE"])
 def delete_programmata(programmata_id):
     token = get_token()
@@ -100,22 +104,13 @@ def delete_programmata(programmata_id):
         return jsonify({"error": "Non autenticato"}), 401
     try:
         db = get_supabase_client(token)
-        db.table("transazione_programmata") \
-          .delete() \
-          .eq("id", programmata_id) \
-          .execute()
+        db.table("transazione_programmata").delete().eq("id", programmata_id).execute()
         return jsonify({"message": "Eliminata"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
 
-# POST /programmate/applica — applica le transazioni programmate scadute
-#
-# Viene chiamato all'avvio dell'app (da api.js).
-# Per ogni transazione con data_prossima <= oggi:
-#   1. Inserisce una transazione reale
-#   2. Se ricorrente: aggiorna data_prossima alla successiva occorrenza
-#   3. Se una tantum: la elimina (è già avvenuta)
+# POST /programmate/applica
 @bp.route("/programmate/applica", methods=["POST"])
 def applica_programmate():
     token = get_token()
@@ -127,13 +122,12 @@ def applica_programmate():
         return jsonify({"error": "Token non valido"}), 401
 
     try:
-        db   = get_supabase_client(token)
-        oggi = date.today().isoformat()
+        db = get_supabase_client(token)
+        oggi = date.today()
 
-        # Recupera tutte le programmate scadute (data_prossima <= oggi)
         scadute = db.table("transazione_programmata") \
                     .select("*") \
-                    .lte("data_prossima", oggi) \
+                    .lte("data_prossima", oggi.isoformat()) \
                     .execute()
 
         applicate = 0
@@ -141,39 +135,30 @@ def applica_programmate():
         for p in scadute.data:
             data_corrente = date.fromisoformat(p["data_prossima"])
 
-            # Ciclo: applica tutte le occorrenze scadute fino ad oggi
-            while data_corrente <= date.today():
+            # Ottieni o crea la categoria con il nome della programmata
+            id_cat = get_o_crea_categoria(db, user_id, p["nome"], p["is_entrata"])
 
-                # Inserisce la transazione reale
+            # Se la data è nel passato, avanza fino alla prossima occorrenza futura
+            # senza inserire transazioni per le date già passate
+            while data_corrente <= oggi:
+                data_corrente = calcola_prossima_data(data_corrente, p["frequenza"])
+
+            # Inserisce solo la transazione per oggi se è esattamente oggi
+            if date.fromisoformat(p["data_prossima"]) == oggi:
                 db.table("transazione").insert({
                     "user_id":      user_id,
                     "soldi":        p["soldi"],
-                    "id_categoria": p["id_categoria"],
+                    "id_categoria": id_cat,
                     "is_entrata":   p["is_entrata"],
-                    "data":         data_corrente.isoformat(),
+                    "data":         oggi.isoformat(),
                 }).execute()
-
                 applicate += 1
 
-                if p["is_ricorrente"] and p["frequenza"]:
-                    # Avanza alla prossima occorrenza
-                    data_corrente = calcola_prossima_data(data_corrente, p["frequenza"])
-                else:
-                    # Una tantum: esce dal ciclo e poi elimina
-                    data_corrente = date.today() + timedelta(days=1)
-
-            if p["is_ricorrente"] and p["frequenza"]:
-                # Aggiorna data_prossima nel DB
-                db.table("transazione_programmata") \
-                  .update({"data_prossima": data_corrente.isoformat()}) \
-                  .eq("id", p["id"]) \
-                  .execute()
-            else:
-                # Una tantum applicata: elimina dal DB
-                db.table("transazione_programmata") \
-                  .delete() \
-                  .eq("id", p["id"]) \
-                  .execute()
+            # Aggiorna data_prossima alla prossima occorrenza futura
+            db.table("transazione_programmata") \
+              .update({"data_prossima": data_corrente.isoformat()}) \
+              .eq("id", p["id"]) \
+              .execute()
 
         return jsonify({"applicate": applicate}), 200
 

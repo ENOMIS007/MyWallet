@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MyWallet — Programmazione</title>
     <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/it.js"></script>
     <script>
         if (!localStorage.getItem("access_token")) {
             document.documentElement.style.display = "none";
@@ -49,12 +52,12 @@
 
         <!-- FORM NUOVA PROGRAMMATA -->
         <section id="sezione-form-programmata">
-            <h3>Nuova Transazione Programmata</h3>
+            <h3>Nuova transazione ricorrente</h3>
 
             <div class="form-grid">
                 <div class="input-group">
                     <label for="prog-nome">Nome</label>
-                    <input type="text" id="prog-nome" placeholder="Es. Spotify, Affitto…">
+                    <input type="text" id="prog-nome" placeholder="Es. Spotify, Affitto, Stipendio…">
                 </div>
                 <div class="input-group">
                     <label for="prog-importo">Importo</label>
@@ -68,17 +71,6 @@
                     </select>
                 </div>
                 <div class="input-group">
-                    <label for="prog-categoria">Categoria</label>
-                    <select id="prog-categoria"></select>
-                </div>
-                <div class="input-group">
-                    <label for="prog-ricorrente">Tipo programmazione</label>
-                    <select id="prog-ricorrente">
-                        <option value="true" selected>Ricorrente</option>
-                        <option value="false">Una tantum</option>
-                    </select>
-                </div>
-                <div class="input-group" id="gruppo-frequenza">
                     <label for="prog-frequenza">Frequenza</label>
                     <select id="prog-frequenza">
                         <option value="giornaliera">Giornaliera</option>
@@ -88,7 +80,7 @@
                     </select>
                 </div>
                 <div class="input-group">
-                    <label for="prog-data">Data inizio / prevista</label>
+                    <label for="prog-data">Giorno</label>
                     <input type="text" id="prog-data">
                 </div>
             </div>
@@ -101,14 +93,6 @@
             <h3>Ricorrenti</h3>
             <div id="lista-ricorrenti" class="lista-programmate">
                 <p class="lista-vuota">Nessuna transazione ricorrente</p>
-            </div>
-        </section>
-
-        <!-- LISTA UNA TANTUM -->
-        <section id="sezione-tantum">
-            <h3>Una Tantum</h3>
-            <div id="lista-tantum" class="lista-programmate">
-                <p class="lista-vuota">Nessuna transazione una tantum</p>
             </div>
         </section>
 

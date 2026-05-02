@@ -53,7 +53,7 @@ body {
     top: 0;
     left: 0;
     height: 100vh;
-    width: 64px;
+    width: 80px;
     background: var(--bg-card);
     border-right: 1px solid var(--border);
     display: flex;
@@ -99,8 +99,8 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 42px;
-    height: 42px;
+    width: 48px;
+    height: 48px;
     border-radius: var(--radius-sm);
     color: var(--text-secondary);
     text-decoration: none;
@@ -145,7 +145,7 @@ body {
 .sidebar-label { display: none; }
 
 .sidebar-icon {
-    font-size: 1rem;
+    font-size: 1.1rem;
     line-height: 1;
 }
 
@@ -161,16 +161,16 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 42px;
-    height: 42px;
+    width: 48px;
+    height: 48px;
     border-radius: var(--radius-sm);
     background: transparent;
     border: none;
     color: var(--text-secondary);
     font-family: 'Inter', sans-serif;
-    font-size: 0.72rem;
+    font-size: 0.65rem;
     font-weight: 600;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
     cursor: pointer;
     transition: all 0.2s;
@@ -188,14 +188,13 @@ body {
     text-transform: uppercase;
 }
 
-/* Contenuto principale — centrato rispetto allo spazio rimanente */
+/* Contenuto centrato rispetto all'intera viewport, con padding sinistro pari alla sidebar */
 #main-content {
-    margin-left: 64px;
-    width: calc(100% - 64px);
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 48px 20px 80px;
+    padding: 48px 20px 80px 100px;
     min-height: 100vh;
 }
 
@@ -946,13 +945,11 @@ td.importo-negativo { color: var(--negative); font-weight: 500; }
    RESPONSIVE
    ════════════════════════════════════════════════════ */
 @media (max-width: 600px) {
-    #main-content {
-        margin-left: 52px;
-        width: calc(100% - 52px);
-        padding: 24px 14px 60px;
-    }
+    #sidebar { width: 60px; }
 
-    #sidebar { width: 52px; }
+    #main-content {
+        padding: 24px 14px 60px 74px;
+    }
 
     header h1 { font-size: 1.3rem; }
 
