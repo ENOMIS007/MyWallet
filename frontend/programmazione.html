@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyWallet — Programmazione</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script>
+        if (!localStorage.getItem("access_token")) {
+            document.documentElement.style.display = "none";
+            window.location.href = "/login.html";
+        }
+    </script>
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <nav id="sidebar">
+        <div class="sidebar-logo">
+            <span class="logo-icon">💰</span>
+        </div>
+        <div class="sidebar-nav">
+            <a href="/" class="sidebar-link" data-tooltip="Home">
+                <span class="sidebar-icon">⌂</span>
+            </a>
+            <a href="/programmazione.html" class="sidebar-link attivo" data-tooltip="Programmazione">
+                <span class="sidebar-icon">◷</span>
+            </a>
+        </div>
+        <div class="sidebar-bottom">
+            <button id="btn-logout" class="sidebar-logout">
+                <span class="sidebar-logout-label">Esci</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- CONTENUTO PRINCIPALE -->
+    <div id="main-content">
+
+        <header>
+            <h1>
+                <span class="logo-icon">📅</span>
+                Programmazione
+            </h1>
+            <div class="header-utente">
+                <span id="header-email"></span>
+            </div>
+        </header>
+
+        <!-- FORM NUOVA PROGRAMMATA -->
+        <section id="sezione-form-programmata">
+            <h3>Nuova Transazione Programmata</h3>
+
+            <div class="form-grid">
+                <div class="input-group">
+                    <label for="prog-nome">Nome</label>
+                    <input type="text" id="prog-nome" placeholder="Es. Spotify, Affitto…">
+                </div>
+                <div class="input-group">
+                    <label for="prog-importo">Importo</label>
+                    <input type="number" id="prog-importo" placeholder="0,00 €">
+                </div>
+                <div class="input-group">
+                    <label for="prog-tipo">Tipo</label>
+                    <select id="prog-tipo">
+                        <option value="false" selected>Uscita</option>
+                        <option value="true">Entrata</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="prog-categoria">Categoria</label>
+                    <select id="prog-categoria"></select>
+                </div>
+                <div class="input-group">
+                    <label for="prog-ricorrente">Tipo programmazione</label>
+                    <select id="prog-ricorrente">
+                        <option value="true" selected>Ricorrente</option>
+                        <option value="false">Una tantum</option>
+                    </select>
+                </div>
+                <div class="input-group" id="gruppo-frequenza">
+                    <label for="prog-frequenza">Frequenza</label>
+                    <select id="prog-frequenza">
+                        <option value="giornaliera">Giornaliera</option>
+                        <option value="settimanale">Settimanale</option>
+                        <option value="mensile" selected>Mensile</option>
+                        <option value="annuale">Annuale</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="prog-data">Data inizio / prevista</label>
+                    <input type="text" id="prog-data">
+                </div>
+            </div>
+
+            <button id="btn-aggiungi-programmata">Aggiungi</button>
+        </section>
+
+        <!-- LISTA RICORRENTI -->
+        <section id="sezione-ricorrenti">
+            <h3>Ricorrenti</h3>
+            <div id="lista-ricorrenti" class="lista-programmate">
+                <p class="lista-vuota">Nessuna transazione ricorrente</p>
+            </div>
+        </section>
+
+        <!-- LISTA UNA TANTUM -->
+        <section id="sezione-tantum">
+            <h3>Una Tantum</h3>
+            <div id="lista-tantum" class="lista-programmate">
+                <p class="lista-vuota">Nessuna transazione una tantum</p>
+            </div>
+        </section>
+
+    </div><!-- fine #main-content -->
+
+    <script src="/js/api.js"></script>
+    <script src="/js/programmazione.js"></script>
+
+</body>
+</html>

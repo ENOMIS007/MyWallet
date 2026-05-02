@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyWallet — Accedi</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        /* ── LAYOUT LOGIN ─────────────────────────────── */
+        body {
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 24px;
+        }
+
+        .login-wrapper {
+            width: 100%;
+            max-width: 420px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 32px;
+        }
+
+        /* ── LOGO ─────────────────────────────────────── */
+        .login-logo {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .login-logo-icon {
+            width: 52px;
+            height: 52px;
+            background: var(--accent-soft);
+            border: 1px solid var(--accent-border);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .login-logo h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            letter-spacing: 0.01em;
+        }
+
+        .login-logo p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+
+        /* ── CARD ─────────────────────────────────────── */
+        .login-card {
+            width: 100%;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 36px 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at 50% -20%, rgba(124, 111, 239, 0.07) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        /* ── TAB TOGGLE ───────────────────────────────── */
+        .login-tabs {
+            display: flex;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 4px;
+            margin-bottom: 28px;
+        }
+
+        .login-tab {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: var(--radius-xs);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .login-tab.attivo {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        /* ── FORM ─────────────────────────────────────── */
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .login-input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .login-input-group label {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .login-input-group input {
+            width: 100%;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.92rem;
+            padding: 12px 14px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .login-input-group input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-soft);
+        }
+
+        .login-input-group input::placeholder {
+            color: var(--text-muted);
+        }
+
+        /* ── BOTTONE SUBMIT ───────────────────────────── */
+        .login-btn {
+            width: 100%;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            border-radius: var(--radius-sm);
+            padding: 13px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.88rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.1s;
+            margin-top: 4px;
+        }
+
+        .login-btn:hover  { opacity: 0.88; transform: translateY(-1px); }
+        .login-btn:active { transform: translateY(0); }
+        .login-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+        /* ── MESSAGGIO ERRORE/SUCCESSO ────────────────── */
+        .login-messaggio {
+            font-size: 0.82rem;
+            text-align: center;
+            padding: 10px 14px;
+            border-radius: var(--radius-xs);
+            display: none;
+        }
+
+        .login-messaggio.errore {
+            display: block;
+            background: var(--negative-soft);
+            color: var(--negative);
+            border: 1px solid rgba(240, 104, 128, 0.25);
+        }
+
+        .login-messaggio.successo {
+            display: block;
+            background: var(--positive-soft);
+            color: var(--positive);
+            border: 1px solid rgba(62, 207, 142, 0.25);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-wrapper">
+
+        <!-- LOGO -->
+        <div class="login-logo">
+            <div class="login-logo-icon">💰</div>
+            <h1>MyWallet</h1>
+            <p>Gestisci le tue finanze in modo semplice</p>
+        </div>
+
+        <!-- CARD -->
+        <div class="login-card">
+
+            <!-- TAB TOGGLE -->
+            <div class="login-tabs">
+                <button class="login-tab attivo" id="tab-login" onclick="mostraTab('login')">Accedi</button>
+                <button class="login-tab" id="tab-register" onclick="window.location.href='/registrazione.html'">Registrati</button>
+            </div>
+
+            <!-- FORM LOGIN -->
+            <div id="form-login" class="login-form">
+                <div class="login-input-group">
+                    <label for="login-email">Email</label>
+                    <input type="email" id="login-email" placeholder="la-tua@email.com">
+                </div>
+                <div class="login-input-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" placeholder="••••••••">
+                </div>
+
+                <div class="login-messaggio" id="msg-login"></div>
+                <button class="login-btn" id="btn-login" onclick="handleLogin()">Accedi</button>
+            </div>
+
+            <!-- FORM REGISTRAZIONE -->
+            <div id="form-register" class="login-form" style="display:none;">
+                <div class="login-input-group">
+                    <label for="reg-email">Email</label>
+                    <input type="email" id="reg-email" placeholder="la-tua@email.com">
+                </div>
+                <div class="login-input-group">
+                    <label for="reg-password">Password</label>
+                    <input type="password" id="reg-password" placeholder="min. 6 caratteri">
+                </div>
+                <div class="login-input-group">
+                    <label for="reg-password2">Conferma password</label>
+                    <input type="password" id="reg-password2" placeholder="••••••••">
+                </div>
+                <div class="login-messaggio" id="msg-register"></div>
+                <button class="login-btn" id="btn-register" onclick="handleRegister()">Crea account</button>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        const BASE_URL = "http://localhost:3000";
+
+        // Se già loggato, vai direttamente all'app
+        if (localStorage.getItem("access_token") || sessionStorage.getItem("access_token")) {
+            window.location.href = "/";
+        }
+
+        // ── TOGGLE TAB ─────────────────────────────────
+        function mostraTab(tab) {
+            const isLogin = tab === "login";
+            document.getElementById("form-login").style.display    = isLogin ? "flex" : "none";
+            document.getElementById("form-register").style.display = isLogin ? "none"  : "flex";
+            document.getElementById("tab-login").classList.toggle("attivo", isLogin);
+            document.getElementById("tab-register").classList.toggle("attivo", !isLogin);
+            nascondiMessaggi();
+        }
+
+        function nascondiMessaggi() {
+            document.getElementById("msg-login").className    = "login-messaggio";
+            document.getElementById("msg-register").className = "login-messaggio";
+        }
+
+        function mostraMessaggio(id, testo, tipo) {
+            const el = document.getElementById(id);
+            el.textContent = testo;
+            el.className = `login-messaggio ${tipo}`;
+        }
+
+        // ── LOGIN ──────────────────────────────────────
+        async function handleLogin() {
+            const email    = document.getElementById("login-email").value.trim();
+            const password = document.getElementById("login-password").value;
+            const btn      = document.getElementById("btn-login");
+
+            if (!email || !password) {
+                mostraMessaggio("msg-login", "Inserisci email e password.", "errore");
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = "Accesso in corso...";
+
+            try {
+                const res  = await fetch(`${BASE_URL}/auth/login`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await res.json();
+
+                if (!res.ok) {
+                    mostraMessaggio("msg-login", data.error || "Credenziali non valide.", "errore");
+                    return;
+                }
+
+                localStorage.setItem("access_token",  data.access_token);
+                localStorage.setItem("refresh_token", data.refresh_token);
+                localStorage.setItem("user_id",       data.user_id);
+                localStorage.setItem("user_email",    data.email);
+                window.location.href = "/";
+
+            } catch (err) {
+                mostraMessaggio("msg-login", "Errore di connessione al server.", "errore");
+            } finally {
+                btn.disabled = false;
+                btn.textContent = "Accedi";
+            }
+        }
+
+        // ── REGISTER ───────────────────────────────────
+        async function handleRegister() {
+            const email    = document.getElementById("reg-email").value.trim();
+            const password = document.getElementById("reg-password").value;
+            const password2 = document.getElementById("reg-password2").value;
+            const btn      = document.getElementById("btn-register");
+
+            if (!email || !password || !password2) {
+                mostraMessaggio("msg-register", "Compila tutti i campi.", "errore");
+                return;
+            }
+
+            if (password !== password2) {
+                mostraMessaggio("msg-register", "Le password non coincidono.", "errore");
+                return;
+            }
+
+            if (password.length < 6) {
+                mostraMessaggio("msg-register", "La password deve essere di almeno 6 caratteri.", "errore");
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = "Creazione account...";
+
+            try {
+                const res  = await fetch(`${BASE_URL}/auth/register`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await res.json();
+
+                if (!res.ok) {
+                    mostraMessaggio("msg-register", data.error || "Registrazione fallita.", "errore");
+                    return;
+                }
+
+                sessionStorage.setItem("verify_email", email);
+                mostraMessaggio("msg-register", "✅ Account creato! Controlla la tua email.", "successo");
+                setTimeout(() => window.location.href = "/registrazione.html", 1500);
+
+            } catch (err) {
+                mostraMessaggio("msg-register", "Errore di connessione al server.", "errore");
+            } finally {
+                btn.disabled = false;
+                btn.textContent = "Crea account";
+            }
+        }
+
+        // ── INVIO CON ENTER ────────────────────────────
+        document.addEventListener("keydown", e => {
+            if (e.key !== "Enter") return;
+            const loginVisible = document.getElementById("form-login").style.display !== "none";
+            if (loginVisible) handleLogin();
+            else handleRegister();
+        });
+    </script>
+
+</body>
+</html>

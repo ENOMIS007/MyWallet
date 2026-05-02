@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyWallet</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/it.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <nav id="sidebar">
+        <div class="sidebar-logo">
+            <span class="logo-icon">💰</span>
+        </div>
+        <div class="sidebar-nav">
+            <a href="/" class="sidebar-link attivo" data-tooltip="Home">
+                <span class="sidebar-icon">⌂</span>
+            </a>
+            <a href="/programmazione.html" class="sidebar-link" data-tooltip="Programmazione">
+                <span class="sidebar-icon">◷</span>
+            </a>
+        </div>
+        <div class="sidebar-bottom">
+            <button id="btn-logout" class="sidebar-logout">
+                <span class="sidebar-logout-label">Esci</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- CONTENUTO PRINCIPALE -->
+    <div id="main-content">
+    <header>
+        <h1>
+            <span class="logo-icon">💰</span>
+            MyWallet
+        </h1>
+        <div class="header-utente">
+            <span id="header-email"></span>
+        </div>
+    </header>
+
+    <!-- SALDO ATTUALE -->
+    <section id="sezione-saldo">
+        <p>Saldo Attuale</p>
+        <h2 id="saldo">0,00 €</h2>
+    </section>
+
+    <!-- GRAFICO ANDAMENTO SALDO -->
+    <section id="sezione-grafico-saldo">
+        <h3>Andamento Saldo</h3>
+        <div id="canvas-saldo-wrapper">
+            <canvas id="chart-saldo"></canvas>
+        </div>
+    </section>
+
+    <!-- FORM INSERIMENTO TRANSAZIONE -->
+    <section id="sezione-form">
+        <h3>Nuova Transazione</h3>
+
+        <div class="form-grid">
+            <div class="input-group">
+                <label for="importo">Importo</label>
+                <input type="number" id="importo" placeholder="0,00 €">
+            </div>
+            <div class="input-group">
+                <label for="data">Data</label>
+                <input type="text" id="data">
+            </div>
+            <div class="input-group">
+                <label for="tipo">Tipo</label>
+                <select id="tipo">
+                    <option value="false" selected>Uscita</option>
+                    <option value="true">Entrata</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="categoria">Categoria</label>
+                <select id="categoria"></select>
+            </div>
+        </div>
+
+        <button id="btn-aggiungi">Aggiungi transazione</button>
+    </section>
+
+    <!-- STORICO MOVIMENTI -->
+    <section id="sezione-storico">
+        <h3>Storico Movimenti</h3>
+        <table id="tabella-transazioni">
+            <thead>
+                <tr>
+                    <th>
+                        <div class="th-wrapper">
+                            <span>Data</span>
+                            <div class="filtro" id="filtro-data">
+                                <button class="filtro-btn" data-filtro="data">↓</button>
+                            </div>
+                        </div>
+                        <div class="filtro-valore-attivo" id="valore-filtro-data"></div>
+                    </th>
+                    <th>
+                        <div class="th-wrapper">
+                            <span>Categoria</span>
+                            <div class="filtro" id="filtro-categoria">
+                                <button class="filtro-btn" data-filtro="categoria">↓</button>
+                                <div class="filtro-pannello">
+                                    <div id="lista-categorie-filtro"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="filtro-valore-attivo" id="valore-filtro-categoria"></div>
+                    </th>
+                    <th>
+                        <div class="th-wrapper">
+                            <span>Importo</span>
+                            <div class="filtro" id="filtro-importo">
+                                <button class="filtro-btn" data-filtro="importo">↓</button>
+                                <div class="filtro-pannello">
+                                    <div class="importo-range">
+                                        <span>da</span>
+                                        <input type="number" id="importo-min" placeholder="0">
+                                        <span>a</span>
+                                        <input type="number" id="importo-max" placeholder="∞">
+                                    </div>
+                                    <button class="btn-applica-importo">Applica</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="filtro-valore-attivo" id="valore-filtro-importo"></div>
+                    </th>
+                    <th>
+                        <div class="th-wrapper">
+                            <span>Tipo</span>
+                            <div class="filtro" id="filtro-tipo">
+                                <button class="filtro-btn" data-filtro="tipo">↓</button>
+                                <div class="filtro-pannello">
+                                    <label><input type="radio" name="tipo-filtro" value=""> Tutti</label>
+                                    <label><input type="radio" name="tipo-filtro" value="true"> Entrata</label>
+                                    <label><input type="radio" name="tipo-filtro" value="false"> Uscita</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="filtro-valore-attivo" id="valore-filtro-tipo"></div>
+                    </th>
+                </tr>
+            </thead>
+            <tbody id="corpo-tabella"></tbody>
+        </table>
+        <input type="text" id="data-range-filtro">
+    </section>
+
+    <!-- GRAFICI ANALISI -->
+    <section id="sezione-grafici">
+        <h3>Analisi</h3>
+
+        <!-- Tab periodo -->
+        <div class="tab-periodo">
+            <button data-periodo="settimana">Settimana</button>
+            <button data-periodo="mese" class="attivo">Mese</button>
+            <button data-periodo="anno">Anno</button>
+            <button data-periodo="tutto">Tutto</button>
+        </div>
+
+        <!-- Griglia: riga 1 doughnut+andamento affiancati, riga 2 categorie full-width -->
+        <div class="grafici-grid">
+            <div class="grafico-card">
+                <h4>Entrate vs Uscite</h4>
+                <div class="canvas-wrapper">
+                    <canvas id="chart-doughnut"></canvas>
+                </div>
+            </div>
+            <div class="grafico-card">
+                <h4>Andamento</h4>
+                <div class="canvas-wrapper">
+                    <canvas id="chart-andamento"></canvas>
+                </div>
+            </div>
+            <div class="grafico-card grafico-card--full">
+                <h4>Uscite per categoria</h4>
+                <div class="canvas-categoria">
+                    <canvas id="chart-uscite"></canvas>
+                </div>
+            </div>
+            <div class="grafico-card grafico-card--full">
+                <h4>Entrate per categoria</h4>
+                <div class="canvas-categoria">
+                    <canvas id="chart-entrate"></canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- MODALE SALDO INIZIALE -->
+    <div id="modal-saldo-iniziale" class="modal-overlay" style="display: none;">
+        <div class="modal-card">
+            <div class="modal-icon">👋</div>
+            <h2>Benvenuto in MyWallet</h2>
+            <p>Per iniziare, imposta il tuo saldo attuale. Può essere anche zero o negativo.</p>
+            
+            <div class="modal-input-group">
+                <input type="number" id="input-saldo-iniziale" placeholder="0.00" step="0.01">
+                <span class="modal-currency">€</span>
+            </div>
+            
+            <button id="btn-salva-saldo" class="modal-btn">Inizia a gestire le finanze</button>
+        </div>
+    </div>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/app.js"></script>
+
+    </div><!-- fine #main-content -->
+
+</body>
+</html>

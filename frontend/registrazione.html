@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyWallet — Registrazione</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        body {
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 24px;
+        }
+
+        .reg-wrapper {
+            width: 100%;
+            max-width: 460px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 32px;
+        }
+
+        /* ── LOGO ── */
+        .reg-logo {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .reg-logo-icon {
+            width: 52px;
+            height: 52px;
+            background: var(--accent-soft);
+            border: 1px solid var(--accent-border);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .reg-logo h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            letter-spacing: 0.01em;
+        }
+
+        /* ── CARD ── */
+        .reg-card {
+            width: 100%;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 40px 36px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .reg-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at 50% -20%, rgba(124, 111, 239, 0.07) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        /* ── STEP INDICATOR ── */
+        .step-bar {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            gap: 0;
+            width: 100%;
+            margin-bottom: 36px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .step-node {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+        }
+
+        .step-circle {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid var(--border);
+            background: var(--bg-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .step-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+            transition: color 0.3s;
+        }
+
+        .step-line {
+            flex: 1;
+            height: 2px;
+            background: var(--border);
+            margin-top: 16px;
+            flex-shrink: 0;
+            transition: background 0.5s ease;
+        }
+
+        .step-node.active .step-circle {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+            transform: scale(1.1);
+        }
+
+        .step-node.active .step-label {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .step-node.done .step-circle {
+            background: var(--positive);
+            border-color: var(--positive);
+            color: #fff;
+        }
+
+        .step-node.done .step-label {
+            color: var(--positive);
+        }
+
+        .step-line.done {
+            background: var(--positive);
+        }
+
+        /* ── STEPS CONTAINER ── */
+        .steps-container {
+            position: relative;
+            z-index: 1;
+        }
+
+        .step-panel {
+            display: none;
+            animation: fadeSlideIn 0.4s ease;
+        }
+
+        .step-panel.visible {
+            display: block;
+        }
+
+        @keyframes fadeSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ── FORM (Step 1) ── */
+        .reg-form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .reg-input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .reg-input-group label {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .reg-input-group input {
+            width: 100%;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.92rem;
+            padding: 12px 14px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .reg-input-group input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-soft);
+        }
+
+        .reg-input-group input::placeholder {
+            color: var(--text-muted);
+        }
+
+        /* ── BUTTONS ── */
+        .reg-btn {
+            width: 100%;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            border-radius: var(--radius-sm);
+            padding: 13px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.88rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.1s;
+            margin-top: 4px;
+        }
+
+        .reg-btn:hover {
+            opacity: 0.88;
+            transform: translateY(-1px);
+        }
+
+        .reg-btn:active {
+            transform: translateY(0);
+        }
+
+        .reg-btn:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .reg-btn-ghost {
+            width: 100%;
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 11px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.82rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 6px;
+        }
+
+        .reg-btn-ghost:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* ── MESSAGE ── */
+        .reg-msg {
+            font-size: 0.82rem;
+            padding: 10px 14px;
+            border-radius: var(--radius-xs);
+            display: none;
+            margin-bottom: 4px;
+        }
+
+        .reg-msg.errore {
+            display: block;
+            background: var(--negative-soft);
+            color: var(--negative);
+            border: 1px solid rgba(240, 104, 128, 0.25);
+        }
+
+        .reg-msg.successo {
+            display: block;
+            background: var(--positive-soft);
+            color: var(--positive);
+            border: 1px solid rgba(62, 207, 142, 0.25);
+        }
+
+        /* ── STEP 2 – Attesa Email ── */
+        .email-icon-wrap {
+            width: 88px;
+            height: 88px;
+            margin: 0 auto 24px;
+            position: relative;
+        }
+
+        .email-icon-bg {
+            width: 88px;
+            height: 88px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.4rem;
+            background: rgba(124, 111, 239, 0.1);
+            border: 2px solid rgba(124, 111, 239, 0.3);
+            animation: pulse 2.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(124, 111, 239, 0.25); }
+            50%       { box-shadow: 0 0 0 14px rgba(124, 111, 239, 0); }
+        }
+
+        .step2-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0 0 10px;
+            text-align: center;
+        }
+
+        .step2-sub {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            line-height: 1.65;
+            text-align: center;
+            margin: 0 auto 28px;
+        }
+
+        .step2-actions {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .resend-timer {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+
+        /* ── STEP 3 – Benvenuto ── */
+        .welcome-icon-wrap {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 24px;
+        }
+
+        .welcome-icon-bg {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.8rem;
+            background: rgba(62, 207, 142, 0.12);
+            border: 2px solid rgba(62, 207, 142, 0.4);
+            animation: scaleIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0.4); opacity: 0; }
+            to   { transform: scale(1);   opacity: 1; }
+        }
+
+        .welcome-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0 0 10px;
+            text-align: center;
+        }
+
+        .welcome-sub {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            text-align: center;
+            margin: 0 auto 28px;
+            line-height: 1.6;
+        }
+
+        .redirect-bar {
+            width: 100%;
+            height: 3px;
+            background: var(--border);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .redirect-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--accent), var(--positive));
+            border-radius: 2px;
+            transition: width 3s linear;
+        }
+
+        .redirect-hint {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        /* Back link */
+        .reg-back {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        .reg-back a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .reg-back a:hover { text-decoration: underline; }
+    </style>
+</head>
+
+<body>
+
+    <div class="reg-wrapper">
+
+        <!-- LOGO -->
+        <div class="reg-logo">
+            <div class="reg-logo-icon">💰</div>
+            <h1>MyWallet</h1>
+        </div>
+
+        <!-- CARD -->
+        <div class="reg-card">
+
+            <!-- Step indicator -->
+            <div class="step-bar">
+                <div class="step-node active" id="sn1">
+                    <div class="step-circle" id="sc1">1</div>
+                    <span class="step-label">Registrazione</span>
+                </div>
+                <div class="step-line" id="sl1"></div>
+                <div class="step-node" id="sn2">
+                    <div class="step-circle" id="sc2">2</div>
+                    <span class="step-label">Conferma email</span>
+                </div>
+                <div class="step-line" id="sl2"></div>
+                <div class="step-node" id="sn3">
+                    <div class="step-circle" id="sc3">3</div>
+                    <span class="step-label">Accesso</span>
+                </div>
+            </div>
+
+            <!-- ── STEP 1: Form registrazione ── -->
+            <div class="step-panel visible" id="panel1">
+                <div class="reg-form">
+                    <div class="reg-input-group">
+                        <label for="reg-email">Email</label>
+                        <input type="email" id="reg-email" placeholder="la-tua@email.com" autocomplete="email">
+                    </div>
+                    <div class="reg-input-group">
+                        <label for="reg-password">Password</label>
+                        <input type="password" id="reg-password" placeholder="min. 6 caratteri" autocomplete="new-password">
+                    </div>
+                    <div class="reg-input-group">
+                        <label for="reg-password2">Conferma password</label>
+                        <input type="password" id="reg-password2" placeholder="••••••••" autocomplete="new-password">
+                    </div>
+                    <div class="reg-msg" id="msg1"></div>
+                    <button class="reg-btn" id="btnRegistra" onclick="handleRegister()">Crea account</button>
+                    <button class="reg-btn-ghost" onclick="window.location.href='/login.html'">← Torna al login</button>
+                </div>
+            </div>
+
+            <!-- ── STEP 2: Attesa email ── -->
+            <div class="step-panel" id="panel2">
+                <div class="email-icon-wrap">
+                    <div class="email-icon-bg">📧</div>
+                </div>
+                <h2 class="step2-title">Controlla la tua email</h2>
+                <p class="step2-sub">
+                    Abbiamo inviato un link di conferma a<br>
+                    <strong id="displayEmail">—</strong><br>
+                    Clicca il link per attivare il tuo account.
+                </p>
+                <div class="reg-msg" id="msg2"></div>
+                <div class="step2-actions">
+                    <button class="reg-btn" style="max-width:280px;" id="btnResend" onclick="reinviaEmail()">📨 &nbsp;Rinvia email</button>
+                    <div class="resend-timer" id="resendTimer" style="display:none;"></div>
+                    <button class="reg-btn-ghost" style="max-width:280px;" onclick="window.location.href='/login.html'">← Torna al login</button>
+                </div>
+            </div>
+
+            <!-- ── STEP 3: Benvenuto ── -->
+            <div class="step-panel" id="panel3">
+                <div class="welcome-icon-wrap">
+                    <div class="welcome-icon-bg">🎉</div>
+                </div>
+                <h2 class="welcome-title">Benvenuto!</h2>
+                <p class="welcome-sub">
+                    Il tuo account è stato verificato.<br>
+                    Stai per accedere a MyWallet.
+                </p>
+                <div class="redirect-bar">
+                    <div class="redirect-fill" id="redirectFill"></div>
+                </div>
+                <p class="redirect-hint">Accesso in corso…</p>
+            </div>
+
+        </div>
+
+        <div class="reg-back" id="regBack">
+            Hai già un account? <a href="/login.html">Accedi</a>
+        </div>
+
+    </div>
+
+    <script>
+        const BASE_URL = "http://localhost:3000";
+
+        // ══════════════════════════════════════════
+        //   STEP MACHINE
+        // ══════════════════════════════════════════
+        function goToStep(n) {
+            [1, 2, 3].forEach(i => {
+                document.getElementById(`panel${i}`).classList.toggle("visible", i === n);
+                const sn = document.getElementById(`sn${i}`);
+                sn.classList.remove("active", "done");
+                if (i < n) sn.classList.add("done");
+                if (i === n) sn.classList.add("active");
+                if (i < n) document.getElementById(`sc${i}`).textContent = "✓";
+            });
+            if (n > 1) document.getElementById("sl1").classList.toggle("done", n > 1);
+            if (n > 2) document.getElementById("sl2").classList.toggle("done", n > 2);
+
+            // Avvia o ferma il polling in base allo step
+            if (n === 2) avviaPolling();
+            else fermaPolling();
+        }
+
+        // ══════════════════════════════════════════
+        //   CONTROLLA HASH ALL'AVVIO
+        //   (ritorno da link email sullo stesso dispositivo)
+        // ══════════════════════════════════════════
+        window.addEventListener("load", () => {
+            const hash   = new URLSearchParams(window.location.hash.substring(1));
+            const params = new URLSearchParams(window.location.search);
+
+            const accessToken  = hash.get("access_token")  || params.get("access_token");
+            const refreshToken = hash.get("refresh_token") || params.get("refresh_token");
+            const errorDesc    = hash.get("error_description") || params.get("error_description");
+
+            if (errorDesc) {
+                goToStep(1);
+                mostraMsg("msg1", "errore", "⚠️ " + decodeURIComponent(errorDesc));
+                return;
+            }
+
+            if (accessToken) {
+                processoVerifica(accessToken, refreshToken);
+                return;
+            }
+
+            // Ripristina step 2 se l'utente era già in attesa
+            const savedStep = sessionStorage.getItem("reg_step");
+            if (savedStep === "2") {
+                const email = sessionStorage.getItem("verify_email") || "";
+                document.getElementById("displayEmail").textContent = email || "—";
+                goToStep(2); // avvia anche il polling
+            }
+        });
+
+        // ══════════════════════════════════════════
+        //   STEP 1: REGISTRAZIONE
+        // ══════════════════════════════════════════
+        async function handleRegister() {
+            const email = document.getElementById("reg-email").value.trim();
+            const pass  = document.getElementById("reg-password").value;
+            const pass2 = document.getElementById("reg-password2").value;
+            const btn   = document.getElementById("btnRegistra");
+
+            if (!email || !pass || !pass2) { mostraMsg("msg1", "errore", "Compila tutti i campi."); return; }
+            if (pass !== pass2)            { mostraMsg("msg1", "errore", "Le password non coincidono."); return; }
+            if (pass.length < 6)           { mostraMsg("msg1", "errore", "La password deve essere di almeno 6 caratteri."); return; }
+
+            btn.disabled = true; btn.textContent = "Creazione account…";
+
+            try {
+                const res  = await fetch(`${BASE_URL}/auth/register`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, password: pass })
+                });
+                const data = await res.json();
+
+                if (!res.ok) {
+                    mostraMsg("msg1", "errore", data.error || "Registrazione fallita.");
+                    btn.disabled = false; btn.textContent = "Crea account";
+                    return;
+                }
+
+                // Salva email e password per il polling
+                sessionStorage.setItem("verify_email", email);
+                sessionStorage.setItem("verify_pass",  pass);  // usata dal polling
+                sessionStorage.setItem("reg_step", "2");
+                document.getElementById("displayEmail").textContent = email;
+                goToStep(2);
+
+            } catch (e) {
+                mostraMsg("msg1", "errore", "Errore di connessione al server.");
+                btn.disabled = false; btn.textContent = "Crea account";
+            }
+        }
+
+        // ══════════════════════════════════════════
+        //   STEP 3: TOKEN VERIFICATO
+        // ══════════════════════════════════════════
+        function processoVerifica(accessToken, refreshToken) {
+            try {
+                const payload = JSON.parse(atob(accessToken.split(".")[1]));
+                localStorage.setItem("access_token", accessToken);
+                if (refreshToken) localStorage.setItem("refresh_token", refreshToken);
+                localStorage.setItem("user_id",    payload.sub   || "");
+                localStorage.setItem("user_email", payload.email || sessionStorage.getItem("verify_email") || "");
+            } catch {
+                localStorage.setItem("access_token", accessToken);
+                if (refreshToken) localStorage.setItem("refresh_token", refreshToken);
+            }
+
+            sessionStorage.removeItem("verify_email");
+            sessionStorage.removeItem("verify_pass");
+            sessionStorage.removeItem("reg_step");
+
+            // Aggiorna step indicator completo prima di mostrare panel3
+            document.getElementById("sl1").classList.add("done");
+            document.getElementById("sl2").classList.add("done");
+            goToStep(3);
+
+            // Avvia redirect bar e redirect
+            requestAnimationFrame(() => requestAnimationFrame(() => {
+                document.getElementById("redirectFill").style.width = "100%";
+            }));
+            setTimeout(() => { window.location.href = "/"; }, 3200);
+        }
+
+        // ══════════════════════════════════════════
+        //   POLLING VERIFICA EMAIL
+        //   Controlla ogni 3s se l'utente ha verificato
+        //   l'email (anche da un altro dispositivo)
+        // ══════════════════════════════════════════
+        let pollingInterval = null;
+
+        function avviaPolling() {
+            if (pollingInterval) return; // evita duplicati
+            pollingInterval = setInterval(async () => {
+                const email = sessionStorage.getItem("verify_email");
+                const pass  = sessionStorage.getItem("verify_pass");
+                if (!email || !pass) return;
+
+                try {
+                    const res  = await fetch(`${BASE_URL}/auth/login`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ email, password: pass })
+                    });
+                    const data = await res.json();
+
+                    if (res.ok && data.access_token) {
+                        // Verifica completata — avanza allo step 3
+                        fermaPolling();
+                        processoVerifica(data.access_token, data.refresh_token);
+                    }
+                    // Se res non è ok (es. email non ancora verificata) non facciamo nulla,
+                    // il polling riproverà al prossimo tick
+                } catch {
+                    // Errore di rete: ignora e riprova
+                }
+            }, 3000);
+        }
+
+        function fermaPolling() {
+            if (pollingInterval) {
+                clearInterval(pollingInterval);
+                pollingInterval = null;
+            }
+        }
+
+        // ══════════════════════════════════════════
+        //   REINVIA EMAIL
+        // ══════════════════════════════════════════
+        let cooldown = false;
+        async function reinviaEmail() {
+            if (cooldown) return;
+            const email = sessionStorage.getItem("verify_email") || "";
+            if (!email) { mostraMsg("msg2", "errore", "Email non disponibile. Ricomincia la registrazione."); return; }
+
+            cooldown = true;
+            const btn = document.getElementById("btnResend");
+            btn.disabled = true; btn.textContent = "Invio…";
+
+            try {
+                const res  = await fetch(`${BASE_URL}/auth/resend-verification`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email })
+                });
+                const data = await res.json();
+
+                if (!res.ok) {
+                    mostraMsg("msg2", "errore", data.error || "Impossibile reinviare l'email.");
+                    cooldown = false; btn.disabled = false; btn.innerHTML = "📨 &nbsp;Rinvia email";
+                    return;
+                }
+
+                mostraMsg("msg2", "successo", "✅ Email reinviata! Controlla la casella.");
+                avviaCountdown(60);
+
+            } catch {
+                mostraMsg("msg2", "errore", "Errore di connessione al server.");
+                cooldown = false; btn.disabled = false; btn.innerHTML = "📨 &nbsp;Rinvia email";
+            }
+        }
+
+        function avviaCountdown(sec) {
+            const btn = document.getElementById("btnResend");
+            const tmr = document.getElementById("resendTimer");
+            btn.innerHTML = "📨 &nbsp;Rinvia email";
+            tmr.style.display = "block";
+            let r = sec;
+            const iv = setInterval(() => {
+                tmr.textContent = `Puoi rinviare tra ${--r}s`;
+                if (r <= 0) { clearInterval(iv); tmr.style.display = "none"; btn.disabled = false; cooldown = false; }
+            }, 1000);
+        }
+
+        // ══════════════════════════════════════════
+        //   HELPER
+        // ══════════════════════════════════════════
+        function mostraMsg(id, tipo, testo) {
+            const el = document.getElementById(id);
+            el.textContent = testo; el.className = `reg-msg ${tipo}`;
+        }
+
+        // Invio con Enter (solo step 1)
+        document.addEventListener("keydown", e => {
+            if (e.key === "Enter" && document.getElementById("panel1").classList.contains("visible")) handleRegister();
+        });
+    </script>
+
+</body>
+
+</html>
