@@ -48,4 +48,4 @@ Per avviare l'app in locale è necessario eseguire i seguenti step:
    ```
 
 ## ⚠️ Attenzione
-Le API key reali non sono presenti nella repository per motivi di sicurezza e saranno disponibili direttamente via email.
+Le API key reali non sono presenti nella repository per motivi di sicurezza.
