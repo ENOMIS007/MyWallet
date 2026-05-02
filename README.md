@@ -15,7 +15,8 @@ Per la realizzazione di questo progetto sono state adoperate le seguenti tecnolo
 
 ## 🚀 Come avviare l'app
 Per avviare l'app in locale è necessario eseguire i seguenti step:
-1. **Clonazione**: È necessario scaricare i file sul proprio dispositivo clonando la repository tramite terminale:
+1. **Clonazione**:
+   È necessario scaricare i file sul proprio dispositivo clonando la repository tramite terminale:
    ```bash
    git clone https://github.com/ENOMIS007/MyWallet.git
    ```
@@ -23,13 +24,16 @@ Per avviare l'app in locale è necessario eseguire i seguenti step:
    ```bash
    cd MyWallet
    ```
-2. **Installazione dipendenze**: Installare tutte le dipendenze tramite i comandi:
+2. **Installazione dipendenze**:
+   Installare tutte le dipendenze tramite i comandi:
    ```bash
    pip install -r requirements.txt
    npm install
    ```
-3. **Configurazione**: Rinominare manualmente `.env.example` in `.env` e inserire le chiavi Supabase (URL e Anon Key).
-4. **Avvio Server**: Dal terminale, spostarsi dentro la cartella MyWallet\backend:
+3. **Configurazione**:
+   Rinominare manualmente `.env.example` in `.env` e inserire le chiavi Supabase (URL e Anon Key).
+4. **Avvio Server**:
+   Dal terminale, spostarsi dentro la cartella MyWallet\backend:
    ```bash
    cd backend
    ```
@@ -37,7 +41,8 @@ Per avviare l'app in locale è necessario eseguire i seguenti step:
    ```bash
    python main.py
    ```
-5. **Esecuzione**: Una volta avviato il backend, aprire il browser e digitare:
+5. **Esecuzione**:
+   Una volta avviato il backend, aprire il browser e digitare:
    ```bash
    localhost:3000
    ```
