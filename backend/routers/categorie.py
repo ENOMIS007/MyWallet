@@ -3,9 +3,6 @@ from database import supabase, get_supabase_client
 
 bp = Blueprint("categorie", __name__)
 
-# Categorie nascoste agli utenti (uso interno)
-CATEGORIE_NASCOSTE = ["Saldo Iniziale"]
-
 
 def get_token():
     """Estrae il JWT dall'header Authorization."""
@@ -24,13 +21,6 @@ def get_user_id(token):
         return None
 
 
-def applica_filtro_nascoste(query):
-    """Esclude dalla query le categorie riservate ad uso interno."""
-    for nome in CATEGORIE_NASCOSTE:
-        query = query.neq("nome", nome)
-    return query
-
-
 # GET /categorie — restituisce tutte le categorie visibili dell'utente
 @bp.route("/categorie", methods=["GET"])
 def get_categorie():
@@ -40,7 +30,6 @@ def get_categorie():
     try:
         db    = get_supabase_client(token)
         query = db.table("categoria").select("*")
-        query = applica_filtro_nascoste(query)
         result = query.execute()
         return jsonify(result.data)
     except Exception as e:
@@ -56,7 +45,6 @@ def get_categorie_entrate():
     try:
         db    = get_supabase_client(token)
         query = db.table("categoria").select("*").eq("is_entrata", True)
-        query = applica_filtro_nascoste(query)
         result = query.execute()
         return jsonify(result.data)
     except Exception as e:
@@ -72,7 +60,6 @@ def get_categorie_uscite():
     try:
         db    = get_supabase_client(token)
         query = db.table("categoria").select("*").eq("is_entrata", False)
-        query = applica_filtro_nascoste(query)
         result = query.execute()
         return jsonify(result.data)
     except Exception as e:

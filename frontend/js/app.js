@@ -2,6 +2,9 @@
 //   STATO GLOBALE
 // ==========================================
 
+const NOME_SALDO_INIZIALE = "saldo iniziale";
+const CATEGORIE_NASCOSTE = [NOME_SALDO_INIZIALE];
+
 let categorieEntrate = [];
 let categorieUscite  = [];
 let tutteLeTransazioni = [];
@@ -22,6 +25,14 @@ let periodoAttivo = "mese";
 // Se non c'è un token salvato, rimanda al login
 if (!localStorage.getItem("access_token") && !sessionStorage.getItem("access_token")) {
     window.location.href = "/login.html";
+}
+
+function isCategoriaNascosta(nome) {
+    return CATEGORIE_NASCOSTE.includes(nome.trim().toLowerCase());
+}
+
+function isSaldoIniziale(nome) {
+    return nome.trim().toLowerCase() === NOME_SALDO_INIZIALE;
 }
 
 // ==========================================
@@ -227,8 +238,7 @@ function mostraModaleSaldoIniziale() {
         
         try {
             // Controlla se esiste già una categoria "Saldo Iniziale" del tipo corretto
-            const listCat = isEntrata ? categorieEntrate : categorieUscite;
-            let cat = listCat.find(c => c.nome.toLowerCase() === "saldo iniziale");
+            let cat = [...categorieEntrate, ...categorieUscite].find(c => isSaldoIniziale(c.nome));
             
             if (!cat) {
                 // Crea la categoria
@@ -340,7 +350,7 @@ function aggiornaSelectCategorie(idDaSelezionare = null) {
     placeholder.textContent = "Seleziona categoria";
     select.appendChild(placeholder);
 
-    filtrate.forEach(cat => {
+    filtrate.filter(cat => !isCategoriaNascosta(cat.nome)).forEach(cat => {
         const option = document.createElement("option");
         option.value = cat.id;
         option.textContent = cat.nome;
@@ -961,13 +971,13 @@ function popolaCategorieNelFiltro() {
     labelTutte.querySelector("input").checked = true;
     container.appendChild(labelTutte);
 
-    categorieEntrate.forEach(cat => {
+    categorieEntrate.filter(cat => !isCategoriaNascosta(cat.nome)).forEach(cat => {
         const label = document.createElement("label");
         label.innerHTML = `<input type="radio" name="cat-filtro" value="${cat.id}"> ${cat.nome}`;
         container.appendChild(label);
     });
 
-    categorieUscite.forEach(cat => {
+    categorieUscite.filter(cat => !isCategoriaNascosta(cat.nome)).forEach(cat => {
         const label = document.createElement("label");
         label.innerHTML = `<input type="radio" name="cat-filtro" value="${cat.id}"> ${cat.nome}`;
         container.appendChild(label);
