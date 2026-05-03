@@ -46,7 +46,8 @@ def get_o_crea_categoria(db, user_id: str, nome: str, is_entrata: bool) -> int:
         "nome":       nome,
         "is_entrata": is_entrata,
         "user_id":    user_id,
-        "is_default": False
+        "is_default": False,
+        "is_programmata": True,
     }).execute()
     return nuova.data[0]["id"]
 

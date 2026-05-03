@@ -350,7 +350,7 @@ function aggiornaSelectCategorie(idDaSelezionare = null) {
     placeholder.textContent = "Seleziona categoria";
     select.appendChild(placeholder);
 
-    filtrate.filter(cat => !isCategoriaNascosta(cat.nome)).forEach(cat => {
+    filtrate.filter(cat => !isCategoriaNascosta(cat.nome) && !cat.is_programmata).forEach(cat => {
         const option = document.createElement("option");
         option.value = cat.id;
         option.textContent = cat.nome;
@@ -971,13 +971,13 @@ function popolaCategorieNelFiltro() {
     labelTutte.querySelector("input").checked = true;
     container.appendChild(labelTutte);
 
-    categorieEntrate.filter(cat => !isCategoriaNascosta(cat.nome)).forEach(cat => {
+    categorieEntrate.filter(cat => !isCategoriaNascosta(cat.nome) && !cat.is_programmata).forEach(cat => {
         const label = document.createElement("label");
         label.innerHTML = `<input type="radio" name="cat-filtro" value="${cat.id}"> ${cat.nome}`;
         container.appendChild(label);
     });
 
-    categorieUscite.filter(cat => !isCategoriaNascosta(cat.nome)).forEach(cat => {
+    categorieUscite.filter(cat => !isCategoriaNascosta(cat.nome) && !cat.is_programmata).forEach(cat => {
         const label = document.createElement("label");
         label.innerHTML = `<input type="radio" name="cat-filtro" value="${cat.id}"> ${cat.nome}`;
         container.appendChild(label);
