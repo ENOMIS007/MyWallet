@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request
-from database import supabase
+from database import supabase, SUPABASE_URL, SUPABASE_SECRET_KEY
+import requests as http_requests
 
 bp = Blueprint("auth", __name__)
 
@@ -105,5 +106,44 @@ def logout():
     try:
         supabase.auth.sign_out()
         return jsonify({"message": "Logout effettuato"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+
+# DELETE /auth/account — elimina l'account e tutti i dati dell'utente.
+# Grazie al CASCADE configurato sul DB, eliminare l'utente da auth.users
+# cancella automaticamente tutte le righe collegate in transazione,
+# transazione_programmata e categoria. Non serve eliminarle manualmente.
+@bp.route("/auth/account", methods=["DELETE"])
+def delete_account():
+    auth_header = request.headers.get("Authorization", "")
+    if not auth_header.startswith("Bearer "):
+        return jsonify({"error": "Non autenticato"}), 401
+
+    token = auth_header.split(" ", 1)[1]
+
+    try:
+        user_result = supabase.auth.get_user(token)
+        user_id = user_result.user.id
+    except Exception:
+        return jsonify({"error": "Token non valido"}), 401
+
+    if not SUPABASE_SECRET_KEY:
+        return jsonify({"error": "Funzione non disponibile: SUPABASE_SECRET_KEY mancante"}), 503
+
+    try:
+        url = f"{SUPABASE_URL}/auth/v1/admin/users/{user_id}"
+        headers = {
+            "apikey":        SUPABASE_SECRET_KEY,
+            "Authorization": f"Bearer {SUPABASE_SECRET_KEY}",
+            "Content-Type":  "application/json"
+        }
+        resp = http_requests.delete(url, headers=headers)
+
+        if resp.status_code not in (200, 204):
+            return jsonify({"error": f"Errore eliminazione utente Auth: {resp.text}"}), 500
+
+        return jsonify({"message": "Account eliminato con successo"}), 200
+
     except Exception as e:
         return jsonify({"error": str(e)}), 400

@@ -59,8 +59,6 @@ async function refreshToken() {
 }
 
 function pulisciStorageERedirect() {
-    // Pulisce tutto prima del redirect così index.html non trova token scaduti
-    // e non riparte il loop
     localStorage.removeItem("access_token");
     localStorage.removeItem("refresh_token");
     localStorage.removeItem("user_id");
@@ -71,9 +69,6 @@ function pulisciStorageERedirect() {
 
 // ══════════════════════════════════════════
 //   REFRESH PROATTIVO
-//   Decodifica la scadenza dal JWT e refresha
-//   se mancano meno di 60 secondi alla scadenza,
-//   senza aspettare il fallimento della chiamata.
 // ══════════════════════════════════════════
 
 async function assicuraTokenValido() {
@@ -95,9 +90,6 @@ async function assicuraTokenValido() {
 
 // ══════════════════════════════════════════
 //   FETCH CON REFRESH
-//   Wrapper per tutte le chiamate autenticate:
-//   1. Controlla proattivamente la scadenza
-//   2. Se nonostante tutto torna 401, refresha e riprova
 // ══════════════════════════════════════════
 
 async function fetchConRefresh(url, options = {}) {
@@ -143,6 +135,14 @@ async function logout() {
     localStorage.removeItem("user_id");
     localStorage.removeItem("user_email");
     localStorage.removeItem("cache_categorie");
+}
+
+// Elimina definitivamente l'account e tutti i suoi dati
+async function deleteAccount() {
+    const response = await fetchConRefresh(`${BASE_URL}/auth/account`, {
+        method: "DELETE"
+    });
+    return await response.json();
 }
 
 // ══════════════════════════════════════════
@@ -197,6 +197,7 @@ async function addCategoria(nome, isEntrata) {
     });
     return await response.json();
 }
+
 // ══════════════════════════════════════════
 //   TRANSAZIONI PROGRAMMATE
 // ══════════════════════════════════════════

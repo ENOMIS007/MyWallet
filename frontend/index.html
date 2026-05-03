@@ -26,9 +26,23 @@
             </a>
         </div>
         <div class="sidebar-bottom">
-            <button id="btn-logout" class="sidebar-logout">
-                <span class="sidebar-logout-label">Esci</span>
-            </button>
+            <!-- Menu utente: trigger + pannello dropdown -->
+            <div class="sidebar-user-menu" id="sidebar-user-menu">
+                <button class="sidebar-user-trigger" id="btn-user-menu" data-tooltip="Account">
+                    👤
+                </button>
+                <div class="sidebar-user-panel">
+                    <button class="sidebar-user-item" id="btn-logout">
+                        <span class="sidebar-user-item-icon">🚪</span>
+                        Esci
+                    </button>
+                    <div class="sidebar-user-separator"></div>
+                    <button class="sidebar-user-item danger" id="btn-apri-elimina">
+                        <span class="sidebar-user-item-icon">🗑️</span>
+                        Elimina account
+                    </button>
+                </div>
+            </div>
         </div>
     </nav>
 
@@ -157,7 +171,6 @@
     <section id="sezione-grafici">
         <h3>Analisi</h3>
 
-        <!-- Tab periodo -->
         <div class="tab-periodo">
             <button data-periodo="settimana">Settimana</button>
             <button data-periodo="mese" class="attivo">Mese</button>
@@ -165,7 +178,6 @@
             <button data-periodo="tutto">Tutto</button>
         </div>
 
-        <!-- Griglia: riga 1 doughnut+andamento affiancati, riga 2 categorie full-width -->
         <div class="grafici-grid">
             <div class="grafico-card">
                 <h4>Entrate vs Uscite</h4>
@@ -200,12 +212,10 @@
             <div class="modal-icon">👋</div>
             <h2>Benvenuto in MyWallet</h2>
             <p>Per iniziare, imposta il tuo saldo attuale. Può essere anche zero o negativo.</p>
-            
             <div class="modal-input-group">
                 <input type="number" id="input-saldo-iniziale" placeholder="0.00" step="0.01">
                 <span class="modal-currency">€</span>
             </div>
-            
             <button id="btn-salva-saldo" class="modal-btn">Inizia a gestire le finanze</button>
         </div>
     </div>
@@ -222,6 +232,30 @@
             <div class="modal-categoria-btn-group">
                 <button id="btn-annulla-categoria" class="modal-btn-ghost">Annulla</button>
                 <button id="btn-salva-categoria" class="modal-btn">Aggiungi</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODALE ELIMINA ACCOUNT -->
+    <div id="modal-elimina-account" class="modal-overlay" style="display:none;">
+        <div class="modal-card">
+            <div class="modal-icon">⚠️</div>
+            <h2>Elimina account</h2>
+            <p>Questa azione è <strong>irreversibile</strong>. Verranno eliminati tutti i tuoi dati: transazioni, categorie e account.</p>
+            <div class="modal-warning-text">
+                🗑️ Saranno eliminati definitivamente: tutte le transazioni, le transazioni programmate e le categorie create.
+            </div>
+            <div class="modal-label-confirm">Scrivi la tua email per confermare</div>
+            <input
+                type="email"
+                id="input-conferma-email"
+                class="modal-confirm-input"
+                placeholder="la-tua@email.com"
+                autocomplete="off"
+            >
+            <div class="modal-categoria-btn-group">
+                <button id="btn-annulla-elimina" class="modal-btn-ghost">Annulla</button>
+                <button id="btn-conferma-elimina" class="modal-btn-danger" disabled>Elimina tutto</button>
             </div>
         </div>
     </div>

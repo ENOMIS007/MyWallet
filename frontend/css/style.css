@@ -1310,3 +1310,225 @@ td.importo-negativo { color: var(--negative); font-weight: 500; }
     text-align: left;
     padding: 14px 16px;
 }
+
+/* ════════════════════════════════════════════════════
+   MENU UTENTE SIDEBAR (dropdown logout / elimina account)
+   ════════════════════════════════════════════════════ */
+
+/* Wrapper che contiene il trigger e il pannello */
+.sidebar-user-menu {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+/* Bottone trigger — identico visivamente al vecchio sidebar-logout */
+.sidebar-user-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+}
+
+.sidebar-user-trigger:hover {
+    background: var(--accent-soft);
+    color: var(--text-primary);
+}
+
+/* Tooltip identico agli altri link sidebar */
+.sidebar-user-trigger::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    left: calc(100% + 12px);
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    font-size: 0.78rem;
+    font-weight: 500;
+    padding: 5px 10px;
+    border-radius: var(--radius-xs);
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s;
+    z-index: 200;
+}
+
+.sidebar-user-trigger:hover::after { opacity: 1; }
+
+/* Pannello dropdown — appare sopra il trigger, ancorato a sinistra */
+.sidebar-user-panel {
+    display: none;
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 0;
+    background: var(--bg-card);
+    border: 1px solid var(--border-accent);
+    border-radius: var(--radius-sm);
+    padding: 6px;
+    min-width: 180px;
+    box-shadow: var(--shadow);
+    z-index: 300;
+    animation: fadeInPanel 0.15s ease;
+}
+
+@keyframes fadeInPanel {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.sidebar-user-menu.aperto .sidebar-user-panel {
+    display: block;
+}
+
+/* Freccia decorativa verso il basso */
+.sidebar-user-panel::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 16px;
+    width: 9px;
+    height: 9px;
+    background: var(--bg-card);
+    border-right: 1px solid var(--border-accent);
+    border-bottom: 1px solid var(--border-accent);
+    transform: rotate(45deg);
+}
+
+/* Voci del menu */
+.sidebar-user-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 9px 12px;
+    border-radius: var(--radius-xs);
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.sidebar-user-item:hover {
+    background: var(--accent-soft);
+    color: var(--accent);
+}
+
+/* Voce elimina — rossa */
+.sidebar-user-item.danger:hover {
+    background: var(--negative-soft);
+    color: var(--negative);
+}
+
+.sidebar-user-item-icon {
+    font-size: 0.95rem;
+    flex-shrink: 0;
+}
+
+/* Separatore tra le voci */
+.sidebar-user-separator {
+    height: 1px;
+    background: var(--border);
+    margin: 4px 0;
+}
+
+
+/* ════════════════════════════════════════════════════
+   MODALE ELIMINA ACCOUNT
+   ════════════════════════════════════════════════════ */
+
+#modal-elimina-account .modal-card {
+    max-width: 440px;
+}
+
+/* Input di conferma email */
+.modal-confirm-input {
+    width: 100%;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-accent);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.92rem;
+    padding: 12px 14px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.modal-confirm-input:focus {
+    border-color: var(--negative);
+    box-shadow: 0 0 0 3px rgba(240, 104, 128, 0.12);
+}
+
+.modal-confirm-input::placeholder {
+    color: var(--text-muted);
+}
+
+/* Bottone elimina — variante rossa */
+.modal-btn-danger {
+    flex: 1;
+    background: var(--negative);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 13px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+}
+
+.modal-btn-danger:hover  { opacity: 0.88; transform: translateY(-1px); }
+.modal-btn-danger:active { transform: translateY(0); }
+
+.modal-btn-danger:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Testo di avviso dentro la modale */
+.modal-warning-text {
+    font-size: 0.8rem;
+    color: var(--negative);
+    background: var(--negative-soft);
+    border: 1px solid rgba(240, 104, 128, 0.25);
+    border-radius: var(--radius-xs);
+    padding: 10px 14px;
+    margin-bottom: 20px;
+    line-height: 1.5;
+    text-align: left;
+    width: 100%;
+}
+
+.modal-label-confirm {
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+    text-align: left;
+    width: 100%;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
