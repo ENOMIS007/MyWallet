@@ -39,7 +39,7 @@ Per avviare l'app in locale è necessario eseguire i seguenti step:
    
 ### 3. Configurazione:
    
-   Rinominare manualmente `.env.example` in `.env` e inserire le chiavi Supabase (URL e Anon Key).
+   Rinominare manualmente `.env.example` in `.env`, aprire il file con un editor di testo e inserire l'url e le chiavi Supabase (URL, Publishable Key e Secret Key).
 
    
 ### 4. Avvio Server:
