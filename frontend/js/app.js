@@ -971,13 +971,13 @@ function popolaCategorieNelFiltro() {
     labelTutte.querySelector("input").checked = true;
     container.appendChild(labelTutte);
 
-    categorieEntrate.filter(cat => !isCategoriaNascosta(cat.nome) && !cat.is_programmata).forEach(cat => {
+    categorieEntrate.filter(cat => !isCategoriaNascosta(cat.nome)).forEach(cat => {
         const label = document.createElement("label");
         label.innerHTML = `<input type="radio" name="cat-filtro" value="${cat.id}"> ${cat.nome}`;
         container.appendChild(label);
     });
 
-    categorieUscite.filter(cat => !isCategoriaNascosta(cat.nome) && !cat.is_programmata).forEach(cat => {
+    categorieUscite.filter(cat => !isCategoriaNascosta(cat.nome)).forEach(cat => {
         const label = document.createElement("label");
         label.innerHTML = `<input type="radio" name="cat-filtro" value="${cat.id}"> ${cat.nome}`;
         container.appendChild(label);
