@@ -1767,3 +1767,14 @@ td.importo-negativo { color: var(--negative); font-weight: 500; }
     position: relative;
     z-index: 101;
 }
+
+/* Stili per i nuovi loghi */
+.img-logo-icona {
+    width: 36px; /* Adatta questa misura a tuo piacimento */
+    height: auto;
+}
+
+.img-logo-completo {
+    height: 42px; /* Adatta l'altezza per farlo stare bene nell'header e nel login */
+    width: auto;
+}
