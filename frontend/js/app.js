@@ -63,6 +63,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         locale: "it",
         position: "auto center",
         defaultDate: "today",
+        maxDate: "today",
         onReady: (sd, ds, instance) => {
             setTimeout(() => {
                 adattaLarghezzaMese();
@@ -480,18 +481,30 @@ function getTransazioniFiltrate(periodo) {
     if (periodo === "tutto") return tutteLeTransazioni;
 
     const oggi = new Date();
-    let dataInizio;
+    let dataInizio, dataFine;
+
     if (periodo === "settimana") {
+        // Lunedì della settimana corrente (domenica = 0 → offset -6)
+        const giornoSettimana = oggi.getDay();
+        const diffLunedi = (giornoSettimana === 0) ? -6 : 1 - giornoSettimana;
         dataInizio = new Date(oggi);
-        dataInizio.setDate(oggi.getDate() - 6);
+        dataInizio.setDate(oggi.getDate() + diffLunedi);
+        // Domenica della settimana corrente
+        dataFine = new Date(dataInizio);
+        dataFine.setDate(dataInizio.getDate() + 6);
     } else if (periodo === "mese") {
+        // Primo giorno del mese corrente
         dataInizio = new Date(oggi.getFullYear(), oggi.getMonth(), 1);
+        // Ultimo giorno del mese corrente
+        dataFine   = new Date(oggi.getFullYear(), oggi.getMonth() + 1, 0);
     } else {
+        // Primo e ultimo giorno dell'anno corrente
         dataInizio = new Date(oggi.getFullYear(), 0, 1);
+        dataFine   = new Date(oggi.getFullYear(), 11, 31);
     }
 
     const inizioStr = dateToStringLocale(dataInizio);
-    const fineStr   = dateToStringLocale(oggi);
+    const fineStr   = dateToStringLocale(dataFine);
     return tutteLeTransazioni.filter(t => {
         const d = t.data.slice(0, 10);
         return d >= inizioStr && d <= fineStr;
@@ -511,23 +524,15 @@ function disegnaGraficoDoughnut(transazioni) {
     const totUscite  = transazioni.filter(t => !t.is_entrata).reduce((s, t) => s + t.soldi, 0);
 
     const ctx = document.getElementById("chart-doughnut").getContext("2d");
-    if (chartDoughnut) { chartDoughnut.destroy(); chartDoughnut = null; }
 
-    if (!totEntrate && !totUscite) {
-        chartDoughnut = new Chart(ctx, {
-            type: "doughnut",
-            data: {
-                labels: ["Entrate", "Uscite"],
-                datasets: [{ data: [1, 1], backgroundColor: ["rgba(62,207,142,0.15)", "rgba(240,104,128,0.15)"], borderColor: ["rgba(62,207,142,0.3)", "rgba(240,104,128,0.3)"], borderWidth: 1.5 }]
-            },
-            options: {
-                responsive: true, maintainAspectRatio: false, cutout: "68%",
-                plugins: {
-                    legend: { position: "bottom", labels: { color: "#8c87a8", font: { family: "Inter", size: 11 }, padding: 16, boxWidth: 12, boxHeight: 12 } },
-                    tooltip: { enabled: false }
-                }
-            }
-        });
+    const nuoviDati = (!totEntrate && !totUscite)
+        ? { data: [1, 1], backgroundColor: ["rgba(62,207,142,0.15)", "rgba(240,104,128,0.15)"], borderColor: ["rgba(62,207,142,0.3)", "rgba(240,104,128,0.3)"], borderWidth: 1.5 }
+        : { data: [totEntrate, totUscite], backgroundColor: ["rgba(62,207,142,0.85)", "rgba(240,104,128,0.85)"], borderColor: ["#3ecf8e", "#f06880"], borderWidth: 1.5, hoverOffset: 6 };
+
+    if (chartDoughnut) {
+        chartDoughnut.data.datasets[0] = nuoviDati;
+        chartDoughnut.options.plugins.tooltip.enabled = !(!totEntrate && !totUscite);
+        chartDoughnut.update();
         return;
     }
 
@@ -535,13 +540,7 @@ function disegnaGraficoDoughnut(transazioni) {
         type: "doughnut",
         data: {
             labels: ["Entrate", "Uscite"],
-            datasets: [{
-                data: [totEntrate, totUscite],
-                backgroundColor: ["rgba(62,207,142,0.85)", "rgba(240,104,128,0.85)"],
-                borderColor: ["#3ecf8e", "#f06880"],
-                borderWidth: 1.5,
-                hoverOffset: 6
-            }]
+            datasets: [nuoviDati]
         },
         options: {
             responsive: true,
@@ -557,24 +556,7 @@ function disegnaGraficoDoughnut(transazioni) {
 
 function disegnaGraficoAndamento(transazioni) {
     const ctx = document.getElementById("chart-andamento").getContext("2d");
-    if (chartAndamento) { chartAndamento.destroy(); chartAndamento = null; }
-
     const mostraAnno = periodoAttivo === "anno" || periodoAttivo === "tutto";
-
-    if (!transazioni.length) {
-        chartAndamento = new Chart(ctx, {
-            type: "line",
-            data: {
-                labels: [dateToStringLocale(new Date())],
-                datasets: [
-                    { label: "Entrate", data: [0], borderColor: "#3ecf8e", backgroundColor: "rgba(62,207,142,0.08)", borderWidth: 2, pointRadius: 3, fill: true, tension: 0.4 },
-                    { label: "Uscite",  data: [0], borderColor: "#f06880", backgroundColor: "rgba(240,104,128,0.08)", borderWidth: 2, pointRadius: 3, fill: true, tension: 0.4 }
-                ]
-            },
-            options: opzioniLineaAndamento(mostraAnno)
-        });
-        return;
-    }
 
     const perGiorno = {};
     transazioni.forEach(t => {
@@ -588,8 +570,8 @@ function disegnaGraficoAndamento(transazioni) {
     const valEntrate  = giorniTutti.map(g => parseFloat(perGiorno[g].entrate.toFixed(2)));
     const valUscite   = giorniTutti.map(g => parseFloat(perGiorno[g].uscite.toFixed(2)));
 
-    const indiciE = campionaIndici(valEntrate, 16);
-    const indiciU = campionaIndici(valUscite, 16);
+    const indiciE = campionaIndici(valEntrate.length ? valEntrate : [0], 16);
+    const indiciU = campionaIndici(valUscite.length  ? valUscite  : [0], 16);
     const indici  = [...new Set([...indiciE, ...indiciU])].sort((a, b) => a - b);
 
     const toLabel = g => {
@@ -599,13 +581,26 @@ function disegnaGraficoAndamento(transazioni) {
             : d.toLocaleDateString("it-IT", { day: "2-digit", month: "2-digit" });
     };
 
+    const labels   = giorniTutti.length ? indici.map(i => toLabel(giorniTutti[i])) : [dateToStringLocale(new Date())];
+    const datiE    = giorniTutti.length ? indici.map(i => valEntrate[i]) : [0];
+    const datiU    = giorniTutti.length ? indici.map(i => valUscite[i])  : [0];
+
+    if (chartAndamento) {
+        chartAndamento.data.labels            = labels;
+        chartAndamento.data.datasets[0].data  = datiE;
+        chartAndamento.data.datasets[1].data  = datiU;
+        chartAndamento.options.scales.x.ticks.maxRotation = mostraAnno ? 30 : 0;
+        chartAndamento.update();
+        return;
+    }
+
     chartAndamento = new Chart(ctx, {
         type: "line",
         data: {
-            labels: indici.map(i => toLabel(giorniTutti[i])),
+            labels,
             datasets: [
-                { label: "Entrate", data: indici.map(i => valEntrate[i]), borderColor: "#3ecf8e", backgroundColor: "rgba(62,207,142,0.08)", borderWidth: 2, pointRadius: 3, pointHoverRadius: 5, fill: true, tension: 0.4 },
-                { label: "Uscite",  data: indici.map(i => valUscite[i]),  borderColor: "#f06880", backgroundColor: "rgba(240,104,128,0.08)", borderWidth: 2, pointRadius: 3, pointHoverRadius: 5, fill: true, tension: 0.4 }
+                { label: "Entrate", data: datiE, borderColor: "#3ecf8e", backgroundColor: "rgba(62,207,142,0.08)", borderWidth: 2, pointRadius: 3, pointHoverRadius: 5, fill: true, tension: 0.4 },
+                { label: "Uscite",  data: datiU, borderColor: "#f06880", backgroundColor: "rgba(240,104,128,0.08)", borderWidth: 2, pointRadius: 3, pointHoverRadius: 5, fill: true, tension: 0.4 }
             ]
         },
         options: opzioniLineaAndamento(mostraAnno)
