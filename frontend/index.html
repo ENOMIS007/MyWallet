@@ -26,7 +26,6 @@
             </a>
         </div>
         <div class="sidebar-bottom">
-            <!-- Menu utente: trigger + pannello dropdown -->
             <div class="sidebar-user-menu" id="sidebar-user-menu">
                 <button class="sidebar-user-trigger" id="btn-user-menu" data-tooltip="Account">
                     👤
@@ -58,13 +57,11 @@
         </div>
     </header>
 
-    <!-- SALDO ATTUALE -->
     <section id="sezione-saldo">
         <p>Saldo Attuale</p>
         <h2 id="saldo">0,00 €</h2>
     </section>
 
-    <!-- GRAFICO ANDAMENTO SALDO -->
     <section id="sezione-grafico-saldo">
         <h3>Andamento Saldo</h3>
         <div id="canvas-saldo-wrapper">
@@ -72,10 +69,8 @@
         </div>
     </section>
 
-    <!-- FORM INSERIMENTO TRANSAZIONE -->
     <section id="sezione-form">
         <h3>Nuova Transazione</h3>
-
         <div class="form-grid">
             <div class="input-group">
                 <label for="importo">Importo</label>
@@ -97,11 +92,9 @@
                 <select id="categoria"></select>
             </div>
         </div>
-
         <button id="btn-aggiungi">Aggiungi transazione</button>
     </section>
 
-    <!-- STORICO MOVIMENTI -->
     <section id="sezione-storico">
         <h3>Storico Movimenti</h3>
         <table id="tabella-transazioni">
@@ -167,17 +160,14 @@
         <input type="text" id="data-range-filtro">
     </section>
 
-    <!-- GRAFICI ANALISI -->
     <section id="sezione-grafici">
         <h3>Analisi</h3>
-
         <div class="tab-periodo">
             <button data-periodo="settimana">Settimana</button>
             <button data-periodo="mese" class="attivo">Mese</button>
             <button data-periodo="anno">Anno</button>
             <button data-periodo="tutto">Tutto</button>
         </div>
-
         <div class="grafici-grid">
             <div class="grafico-card">
                 <h4>Entrate vs Uscite</h4>
@@ -246,13 +236,7 @@
                 🗑️ Saranno eliminati definitivamente: tutte le transazioni, le transazioni programmate e le categorie create.
             </div>
             <div class="modal-label-confirm">Scrivi la tua email per confermare</div>
-            <input
-                type="email"
-                id="input-conferma-email"
-                class="modal-confirm-input"
-                placeholder="la-tua@email.com"
-                autocomplete="off"
-            >
+            <input type="email" id="input-conferma-email" class="modal-confirm-input" placeholder="la-tua@email.com" autocomplete="off">
             <div class="modal-categoria-btn-group">
                 <button id="btn-annulla-elimina" class="modal-btn-ghost">Annulla</button>
                 <button id="btn-conferma-elimina" class="modal-btn-danger" disabled>Elimina tutto</button>
@@ -260,7 +244,9 @@
         </div>
     </div>
 
+    <!-- api.js prima, poi sidebar.js, poi la logica della pagina -->
     <script src="/js/api.js"></script>
+    <script src="/js/sidebar.js"></script>
     <script src="/js/app.js"></script>
 
     </div><!-- fine #main-content -->

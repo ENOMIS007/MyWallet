@@ -3,17 +3,11 @@
 // ==========================================
 document.addEventListener("DOMContentLoaded", async () => {
 
-    // Logout
-    document.getElementById("btn-logout").addEventListener("click", async () => {
-        await logout();
-        window.location.href = "/login.html";
-    });
-
     // Email header
     const emailEl = document.getElementById("header-email");
     if (emailEl) emailEl.textContent = localStorage.getItem("user_email") || "";
 
-    // Flatpickr data — stesso stile della pagina principale
+    // Flatpickr data
     flatpickr("#prog-data", {
         dateFormat: "Y-m-d",
         altInput: true,
@@ -21,7 +15,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         locale: "it",
         position: "auto center",
         defaultDate: "today",
-        minDate: "today"  // solo date future o oggi
+        minDate: "today"
     });
 
     // Carica lista ricorrenti
