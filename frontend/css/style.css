@@ -202,7 +202,7 @@ body {
 
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; appearance: none; }
-input[type="number"] { -moz-appearance: textfield; }
+input[type="number"] { appearance: textfield; }
 
 
 /* ════════════════════════════════════════════════════
@@ -1777,4 +1777,457 @@ td.importo-negativo { color: var(--negative); font-weight: 500; }
 .img-logo-completo {
     height: 42px; /* Adatta l'altezza per farlo stare bene nell'header e nel login */
     width: auto;
+}
+
+/* ════════════════════════════════════════════════════
+   PAGINA PROGRAMMAZIONE — CALENDARIO + MODALE FORM
+   Da aggiungere IN FONDO a style.css
+   ════════════════════════════════════════════════════ */
+
+/* ── Sezione calendario ─────────────────────────── */
+#sezione-calendario {
+    width: 100%;
+    max-width: 860px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px 32px;
+    margin-bottom: 20px;
+}
+
+/* ── Header del calendario: navigazione mese ──── */
+.cal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.cal-header-left {
+    display: flex;
+    align-items: center;
+    gap: 0;             /* gap gestito singolarmente sotto */
+}
+
+/* Gruppo navigazione: ‹ Maggio 2026 › tutto insieme con spazio bilanciato */
+.cal-nav-group {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+}
+
+.cal-nav-btn {
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    color: var(--text-secondary);
+    width: 34px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    padding: 0;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.cal-nav-btn:hover {
+    background: var(--accent-soft);
+    color: var(--accent);
+}
+
+.cal-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: 0.01em;
+    padding: 0 18px;
+    white-space: nowrap;
+    border-left: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+    height: 36px;
+    display: flex;
+    align-items: center;
+}
+
+/* ── Pulsante "+" aggiungi programmata ──────────── */
+.cal-add-btn {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 8px 16px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+}
+
+.cal-add-btn:hover  { opacity: 0.88; transform: translateY(-1px); }
+.cal-add-btn:active { transform: translateY(0); }
+
+.cal-add-btn .cal-add-icon {
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+/* ── Griglia giorni settimana (intestazione) ──── */
+.cal-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin-bottom: 6px;
+}
+
+.cal-weekday {
+    text-align: center;
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 4px 0;
+}
+
+/* ── Legenda pallini ─────────────────────────── */
+.cal-legenda {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-left: 16px;
+}
+
+.cal-legenda-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    letter-spacing: 0.03em;
+}
+
+.cal-legenda-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.cal-legenda-dot.entrata { background: var(--positive); }
+.cal-legenda-dot.uscita  { background: var(--negative); }
+
+/* ── Griglia giorni del mese ─────────────────── */
+.cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+}
+
+/* Singola cella giorno */
+.cal-day {
+    position: relative;
+    aspect-ratio: 1;           /* cella quadrata */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: 7px;
+    border-radius: var(--radius-xs);
+    cursor: default;
+    transition: background 0.15s;
+    min-height: 44px;
+}
+
+/* Giorni del mese corrente */
+.cal-day.current-month {
+    background: var(--bg-secondary);
+}
+
+.cal-day.current-month:hover {
+    background: var(--bg-card-hover);
+}
+
+/* Giorni di altri mesi (grigio trasparente) */
+.cal-day.other-month {
+    background: transparent;
+    opacity: 0.3;
+    pointer-events: none;
+}
+
+/* Giorno di oggi */
+.cal-day.today .cal-day-num {
+    background: var(--accent);
+    color: #fff;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+}
+
+/* Numero del giorno */
+.cal-day-num {
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    line-height: 1;
+}
+
+/* Indicatori colorati degli eventi nel giorno */
+.cal-dots {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2px;
+    margin-top: 4px;
+    max-width: 100%;
+    padding: 0 2px;
+}
+
+.cal-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.cal-dot.entrata { background: var(--positive); }
+.cal-dot.uscita  { background: var(--negative); }
+
+/* Cella con almeno un evento → cursore pointer e hover più marcato */
+.cal-day.has-events {
+    cursor: pointer;
+}
+
+.cal-day.has-events:hover {
+    background: var(--accent-soft);
+    border: 1px solid var(--accent-border);
+}
+
+/* ── Tooltip eventi del giorno ───────────────── */
+.cal-tooltip {
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 300;
+    background: var(--bg-card);
+    border: 1px solid var(--border-accent);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    min-width: 180px;
+    max-width: 240px;
+    box-shadow: var(--shadow);
+    pointer-events: none;
+}
+
+/* Freccia in cima al tooltip */
+.cal-tooltip::before {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: 50%;
+    transform: translateX(-50%) rotate(45deg);
+    width: 9px;
+    height: 9px;
+    background: var(--bg-card);
+    border-left: 1px solid var(--border-accent);
+    border-top: 1px solid var(--border-accent);
+}
+
+.cal-day.has-events:hover .cal-tooltip {
+    display: block;
+}
+
+/* Evita che il tooltip esca a destra nelle celle di fine riga */
+.cal-day:nth-child(7n) .cal-tooltip,
+.cal-day:nth-child(7n-1) .cal-tooltip {
+    left: auto;
+    right: 0;
+    transform: none;
+}
+
+.cal-day:nth-child(7n) .cal-tooltip::before,
+.cal-day:nth-child(7n-1) .cal-tooltip::before {
+    left: auto;
+    right: 14px;
+    transform: rotate(45deg);
+}
+
+.cal-tooltip-title {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.cal-tooltip-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 0.82rem;
+    color: var(--text-primary);
+    padding: 3px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cal-tooltip-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.cal-tooltip-dot.entrata { background: var(--positive); }
+.cal-tooltip-dot.uscita  { background: var(--negative); }
+
+.cal-tooltip-nome {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cal-tooltip-importo {
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.cal-tooltip-importo.positivo { color: var(--positive); }
+.cal-tooltip-importo.negativo { color: var(--negative); }
+
+/* ── Lista ricorrenti aggiornata ──────────────── */
+/* La card-programmata è già definita, qui aggiungiamo
+   solo il componente della "frequenza leggibile" */
+
+.card-programmata-ricorrenza {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    font-weight: 400;
+    margin-top: 2px;
+}
+
+/* ── Modale form nuova transazione programmata ─ */
+#modal-nuova-programmata .modal-card {
+    max-width: 480px;
+    text-align: left;          /* override del center della modal base */
+    align-items: flex-start;
+}
+
+#modal-nuova-programmata .modal-icon,
+#modal-nuova-programmata h2,
+#modal-nuova-programmata > .modal-card > p {
+    /* Riallinea al centro solo icona, titolo e sottotitolo */
+    align-self: center;
+    text-align: center;
+}
+
+.modal-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    width: 100%;
+    margin-bottom: 16px;
+}
+
+.modal-input-group-labeled {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+}
+
+.modal-input-group-labeled label {
+    font-size: 0.73rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+/* Input e select dentro la modale programmazione */
+#modal-nuova-programmata input[type="text"],
+#modal-nuova-programmata input[type="number"],
+#modal-nuova-programmata select {
+    width: 100%;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 400;
+    padding: 11px 13px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    appearance: none;
+    -webkit-appearance: none;
+    text-align: left;
+}
+
+#modal-nuova-programmata input[type="text"]:focus,
+#modal-nuova-programmata input[type="number"]:focus,
+#modal-nuova-programmata select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+#modal-nuova-programmata input::placeholder {
+    color: var(--text-muted);
+    font-size: 0.88rem;
+}
+
+#modal-nuova-programmata select option {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+/* Pulsanti della modale in basso */
+.modal-prog-btn-group {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    margin-top: 4px;
+}
+
+.modal-prog-btn-group .modal-btn-ghost {
+    flex: 1;
+}
+
+.modal-prog-btn-group .modal-btn {
+    flex: 2;
+}
+
+/* ── Responsive calendario ───────────────────── */
+@media (max-width: 600px) {
+    #sezione-calendario { padding: 18px 14px; }
+
+    .cal-title { font-size: 0.98rem; min-width: 130px; }
+
+    .cal-day { min-height: 36px; padding-top: 5px; }
+    .cal-day-num { font-size: 0.7rem; }
+    .cal-dot { width: 4px; height: 4px; }
+
+    .modal-form-grid { grid-template-columns: 1fr; }
 }
