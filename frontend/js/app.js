@@ -56,22 +56,27 @@ document.addEventListener("DOMContentLoaded", async () => {
         emailEl.textContent = localStorage.getItem("user_email") || sessionStorage.getItem("user_email") || "";
     }
 
-    flatpickr("#data", {
-        dateFormat: "Y-m-d",
-        altInput: true,
-        altFormat: "d-m-Y",
-        locale: "it",
-        position: "auto center",
-        defaultDate: "today",
-        maxDate: "today",
-        onReady: (sd, ds, instance) => {
-            setTimeout(() => {
-                adattaLarghezzaMese();
-                trasformaAnnoInSelect(instance);
-            }, 0);
-        },
-        onMonthChange: adattaLarghezzaMese
-    });
+    // Inizializza flatpickr solo nel pannello manuale (si avvia se il campo #data esiste)
+    function inizializzaFlatpickr() {
+        const dataInput = document.getElementById("data");
+        if (!dataInput || dataInput._flatpickr) return;
+        flatpickr("#data", {
+            dateFormat: "Y-m-d",
+            altInput: true,
+            altFormat: "d-m-Y",
+            locale: "it",
+            position: "auto center",
+            defaultDate: "today",
+            maxDate: "today",
+            onReady: (sd, ds, instance) => {
+                setTimeout(() => {
+                    adattaLarghezzaMese();
+                    trasformaAnnoInSelect(instance);
+                }, 0);
+            },
+            onMonthChange: adattaLarghezzaMese
+        });
+    }
 
     const cacheCategorie = localStorage.getItem('cache_categorie');
     if (cacheCategorie) {
@@ -214,6 +219,222 @@ document.addEventListener("DOMContentLoaded", async () => {
                 console.error(err);
             });
     });
+
+    // ══════════════════════════════════════════
+    //   SWITCH MODALITÀ: AUTOMATICA / MANUALE
+    // ══════════════════════════════════════════
+
+    const btnModeAuto    = document.getElementById("btn-mode-auto");
+    const btnModeManuale = document.getElementById("btn-mode-manuale");
+    const pannelloAI     = document.getElementById("pannello-ai");
+    const pannelloMan    = document.getElementById("pannello-manuale");
+
+    let modalitaCorrente = "auto"; // default: automatica
+
+    function switchMode(mode) {
+        modalitaCorrente = mode;
+        if (mode === "auto") {
+            pannelloAI.style.display  = "";
+            pannelloMan.style.display = "none";
+            btnModeAuto.classList.add("active");
+            btnModeManuale.classList.remove("active");
+        } else {
+            pannelloAI.style.display  = "none";
+            pannelloMan.style.display = "";
+            btnModeManuale.classList.add("active");
+            btnModeAuto.classList.remove("active");
+            // Inizializza flatpickr quando si apre la modalità manuale
+            inizializzaFlatpickr();
+        }
+    }
+
+    btnModeAuto.addEventListener("click",    () => switchMode("auto"));
+    btnModeManuale.addEventListener("click", () => switchMode("manuale"));
+
+    // ══════════════════════════════════════════
+    //   AI — LOGICA ANALISI TESTO
+    // ══════════════════════════════════════════
+
+    // Stato temporaneo del risultato AI
+    let datiAI = null;
+
+    const btnAnalizza    = document.getElementById("btn-analizza");
+    const aiPreview      = document.getElementById("ai-preview");
+    const analizzaLabel  = document.getElementById("analizza-label");
+    const analizzaSpinner= document.getElementById("analizza-spinner");
+
+    btnAnalizza.addEventListener("click", async () => {
+        const testo = document.getElementById("ai-testo").value.trim();
+        if (!testo) {
+            document.getElementById("ai-testo").classList.add("ai-textarea--shake");
+            setTimeout(() => document.getElementById("ai-testo").classList.remove("ai-textarea--shake"), 500);
+            return;
+        }
+
+        // UI: stato di caricamento
+        analizzaLabel.style.display  = "none";
+        analizzaSpinner.style.display = "";
+        btnAnalizza.disabled          = true;
+        aiPreview.style.display       = "none";
+
+        try {
+            // Raccoglie tutti i nomi categoria disponibili (escludendo quelle programmate o nascoste)
+            const tutteCategorie = [
+                ...categorieEntrate.filter(c => !c.is_programmata).map(c => c.nome),
+                ...categorieUscite.filter(c => !c.is_programmata).map(c => c.nome)
+            ].filter(n => !isCategoriaNascosta(n));
+
+            const risultato = await analizzaTestoIA(testo, tutteCategorie);
+
+            if (risultato.error) {
+                throw new Error(risultato.error);
+            }
+
+            datiAI = risultato;
+
+            // Popola i chip di anteprima
+            document.getElementById("chip-importo").innerHTML =
+                `<span class="chip-label">💶 Importo</span><span class="chip-valore">${formatImporto(risultato.importo)} €</span>`;
+            document.getElementById("chip-tipo").innerHTML =
+                `<span class="chip-label">${risultato.is_entrata ? '📈' : '📉'} Tipo</span><span class="chip-valore ${risultato.is_entrata ? 'chip-entrata' : 'chip-uscita'}">${risultato.is_entrata ? 'Entrata' : 'Uscita'}</span>`;
+            document.getElementById("chip-categoria").innerHTML =
+                `<span class="chip-label">🏷️ Categoria</span><span class="chip-valore">${risultato.categoria_suggerita}</span>`;
+
+            const dataFormattata = risultato.data.split("-").reverse().join("/");
+            document.getElementById("chip-data").innerHTML =
+                `<span class="chip-label">📅 Data</span><span class="chip-valore">${dataFormattata}</span>`;
+
+            // Mostra la preview con animazione
+            aiPreview.style.display = "";
+            aiPreview.classList.remove("ai-preview--in");
+            void aiPreview.offsetWidth; // reflow
+            aiPreview.classList.add("ai-preview--in");
+
+        } catch (err) {
+            alert("Errore AI: " + err.message);
+            console.error(err);
+        } finally {
+            analizzaLabel.style.display   = "";
+            analizzaSpinner.style.display = "none";
+            btnAnalizza.disabled          = false;
+        }
+    });
+
+    // Enter nel textarea analizza
+    document.getElementById("ai-testo").addEventListener("keydown", e => {
+        if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            btnAnalizza.click();
+        }
+    });
+
+    // CONFERMA risultato AI → salva transazione
+    document.getElementById("btn-ai-conferma").addEventListener("click", async () => {
+        if (!datiAI) return;
+
+        const btnConf = document.getElementById("btn-ai-conferma");
+        btnConf.disabled    = true;
+        btnConf.textContent = "Salvataggio...";
+
+        try {
+            const { importo, is_entrata, categoria_suggerita, data: dataAI } = datiAI;
+
+            // Trova o crea categoria
+            const listaGiusta = is_entrata ? categorieEntrate : categorieUscite;
+            let cat = listaGiusta.find(c =>
+                c.nome.trim().toLowerCase() === categoria_suggerita.trim().toLowerCase()
+            );
+
+            if (!cat) {
+                // La categoria non esiste → la crea
+                const risultatoCat = await addCategoria(categoria_suggerita.trim(), is_entrata);
+                cat = Array.isArray(risultatoCat) ? risultatoCat[0] : risultatoCat;
+                if (is_entrata) categorieEntrate.push(cat);
+                else            categorieUscite.push(cat);
+                localStorage.setItem('cache_categorie', JSON.stringify({ entrate: categorieEntrate, uscite: categorieUscite }));
+                
+                // Aggiorna le select e i filtri in modo da vedere subito la nuova categoria!
+                aggiornaSelectCategorie();
+                popolaCategorieNelFiltro();
+            }
+
+            // Aggiornamento ottimistico UI
+            const saldoParsed = tutteLeTransazioni.reduce((acc, t) => t.is_entrata ? acc + t.soldi : acc - t.soldi, 0);
+            aggiornaSaldoUI(is_entrata ? saldoParsed + importo : saldoParsed - importo);
+
+            const transazioneOttimista = {
+                id: null, soldi: importo, is_entrata,
+                data: dataAI + "T00:00:00",
+                created_at: new Date().toISOString(),
+                id_categoria: cat.id,
+                categoria: { nome: cat.nome }
+            };
+            tutteLeTransazioni = [transazioneOttimista, ...tutteLeTransazioni];
+
+            const tbody = document.getElementById("corpo-tabella");
+            const riga  = document.createElement("tr");
+            const dataVisualizzata = dataAI.split("-").reverse().join("/");
+            riga.innerHTML = `
+                <td>${dataVisualizzata}</td>
+                <td>${cat.nome}</td>
+                <td class="${is_entrata ? 'importo-positivo' : 'importo-negativo'}">${is_entrata ? '+' : '-'}${formatImporto(importo)} €</td>
+                <td><span class="badge-tipo ${is_entrata ? 'badge-entrata' : 'badge-uscita'}">${is_entrata ? 'Entrata' : 'Uscita'}</span></td>
+            `;
+            tbody.prepend(riga);
+            aggiornaGraficoSaldo();
+            aggiornaGraficiAnalisi();
+
+            // Reset pannello AI
+            document.getElementById("ai-testo").value = "";
+            aiPreview.style.display = "none";
+            datiAI = null;
+
+            // Sync server
+            await addTransazione(importo, cat.id, is_entrata, dataAI);
+            const transazioni = await getTransazioni();
+            tutteLeTransazioni = transazioni;
+            aggiornaGraficoSaldo();
+            aggiornaGraficiAnalisi();
+
+        } catch (err) {
+            alert("Errore nel salvataggio: " + err.message);
+            console.error(err);
+        } finally {
+            btnConf.disabled    = false;
+            btnConf.textContent = "✅ Conferma e salva";
+        }
+    });
+
+    // ANNULLA → apre modalità manuale pre-compilata
+    document.getElementById("btn-ai-annulla").addEventListener("click", () => {
+        switchMode("manuale");
+
+        if (datiAI) {
+            // Pre-compila i campi manuali con i dati AI
+            setTimeout(() => {
+                document.getElementById("importo").value = datiAI.importo;
+
+                const tipoEl = document.getElementById("tipo");
+                tipoEl.value = datiAI.is_entrata ? "true" : "false";
+                aggiornaSelectCategorie();
+
+                // Seleziona la categoria se esiste
+                const listaGiusta = datiAI.is_entrata ? categorieEntrate : categorieUscite;
+                const cat = listaGiusta.find(c =>
+                    c.nome.trim().toLowerCase() === datiAI.categoria_suggerita.trim().toLowerCase()
+                );
+                if (cat) {
+                    document.getElementById("categoria").value = cat.id;
+                }
+
+                // Imposta la data via flatpickr
+                const fp = document.querySelector("#data")?._flatpickr;
+                if (fp) fp.setDate(datiAI.data);
+
+            }, 50);
+        }
+    });
+
 });
 
 // ==========================================

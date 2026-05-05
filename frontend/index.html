@@ -70,29 +70,79 @@
     </section>
 
     <section id="sezione-form">
-        <h3>Nuova Transazione</h3>
-        <div class="form-grid">
-            <div class="input-group">
-                <label for="importo">Importo</label>
-                <input type="number" id="importo" placeholder="0,00 €">
-            </div>
-            <div class="input-group">
-                <label for="data">Data</label>
-                <input type="text" id="data">
-            </div>
-            <div class="input-group">
-                <label for="tipo">Tipo</label>
-                <select id="tipo">
-                    <option value="false" selected>Uscita</option>
-                    <option value="true">Entrata</option>
-                </select>
-            </div>
-            <div class="input-group">
-                <label for="categoria">Categoria</label>
-                <select id="categoria"></select>
+        <div class="form-header">
+            <h3>Nuova Transazione</h3>
+            <!-- SWITCH MODALITÀ -->
+            <div class="mode-switch-wrapper">
+                <button id="btn-mode-auto" class="mode-btn active" data-mode="auto">
+                    <span class="mode-icon">✨</span> Automatica
+                </button>
+                <button id="btn-mode-manuale" class="mode-btn" data-mode="manuale">
+                    <span class="mode-icon">✏️</span> Manuale
+                </button>
             </div>
         </div>
-        <button id="btn-aggiungi">Aggiungi transazione</button>
+
+        <!-- PANNELLO AI (default) -->
+        <div id="pannello-ai" class="pannello-ai">
+            <div class="ai-input-wrapper">
+                <span class="ai-spark">✨</span>
+                <textarea
+                    id="ai-testo"
+                    class="ai-textarea"
+                    placeholder='Es: "Oggi ho speso 15 euro per due pizze con Marco" oppure "Ricevuto stipendio 1200€"'
+                    rows="2"
+                ></textarea>
+            </div>
+            <button id="btn-analizza" class="btn-analizza">
+                <span id="analizza-label">Analizza con AI</span>
+                <span id="analizza-spinner" class="ai-spinner" style="display:none;">⏳</span>
+            </button>
+
+            <!-- ANTEPRIMA RISULTATO AI -->
+            <div id="ai-preview" class="ai-preview" style="display:none;">
+                <div class="ai-preview-header">
+                    <span class="ai-preview-icon">🤖</span>
+                    <span class="ai-preview-title">Ho capito così — confermi?</span>
+                </div>
+                <div class="ai-preview-fields">
+                    <div class="ai-preview-chip" id="chip-importo"></div>
+                    <div class="ai-preview-chip" id="chip-tipo"></div>
+                    <div class="ai-preview-chip" id="chip-categoria"></div>
+                    <div class="ai-preview-chip" id="chip-data"></div>
+                </div>
+                <div class="ai-preview-actions">
+                    <button id="btn-ai-conferma" class="btn-ai-conferma">✅ Conferma e salva</button>
+                    <button id="btn-ai-annulla" class="btn-ai-annulla">✏️ Modifica manualmente</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANNELLO MANUALE (nascosto di default) -->
+        <div id="pannello-manuale" class="pannello-manuale" style="display:none;">
+            <div class="form-grid">
+                <div class="input-group">
+                    <label for="importo">Importo</label>
+                    <input type="number" id="importo" placeholder="0,00 €">
+                </div>
+                <div class="input-group">
+                    <label for="data">Data</label>
+                    <input type="text" id="data">
+                </div>
+                <div class="input-group">
+                    <label for="tipo">Tipo</label>
+                    <select id="tipo">
+                        <option value="false" selected>Uscita</option>
+                        <option value="true">Entrata</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="categoria">Categoria</label>
+                    <select id="categoria"></select>
+                </div>
+            </div>
+            <button id="btn-aggiungi">Aggiungi transazione</button>
+        </div>
     </section>
 
     <section id="sezione-storico">

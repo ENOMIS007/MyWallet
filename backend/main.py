@@ -2,6 +2,8 @@ from flask import Flask, send_from_directory, request
 from flask_cors import CORS
 from database import supabase
 import os
+from dotenv import load_dotenv
+load_dotenv()
 
 app = Flask(__name__, static_folder="../frontend")
 CORS(app)
@@ -34,12 +36,13 @@ def inject_jwt():
 
 
 # ── BLUEPRINT ───────────────────────────────────────────────
-from routers import categorie, transazioni, auth, programmazione
+from routers import categorie, transazioni, auth, programmazione, ai
 
 app.register_blueprint(auth.bp)
 app.register_blueprint(categorie.bp)
 app.register_blueprint(transazioni.bp)
 app.register_blueprint(programmazione.bp)
+app.register_blueprint(ai.bp)
 
 
 if __name__ == "__main__":

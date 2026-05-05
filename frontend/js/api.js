@@ -228,3 +228,15 @@ async function applicaProgrammate() {
     });
     return await response.json();
 }
+
+// ══════════════════════════════════════════
+//   AI — INSERIMENTO INTELLIGENTE
+// ══════════════════════════════════════════
+
+async function analizzaTestoIA(testo, categorie) {
+    const response = await fetchConRefresh(`${BASE_URL}/ai/analizza`, {
+        method: "POST",
+        body: JSON.stringify({ testo, categorie })
+    });
+    return await response.json();
+}

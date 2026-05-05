@@ -11,6 +11,7 @@ Per la realizzazione di questo progetto sono state adoperate le seguenti tecnolo
 * **Backend**: Python.
 * **Frontend**: JavaScript (Localhost:3000), HTML e CSS.
 * **DB**: Supabase.
+* **IA**: Mistral.
 
 
 ## 🚀 Come avviare l'app
@@ -39,7 +40,7 @@ Per avviare l'app in locale è necessario eseguire i seguenti step:
    
 ### 3. Configurazione:
    
-   Rinominare manualmente `.env.example` in `.env`, aprire il file con un editor di testo e inserire l'url e le chiavi Supabase (URL, Publishable Key e Secret Key).
+   Rinominare manualmente `.env.example` in `.env`, aprire il file con un editor di testo e inserire l'url e le chiavi Supabase ed anche l'API KEY di Mistral (URL, Publishable Key, Secret Key, Mistral API KEY).
 
    
 ### 4. Avvio Server:
