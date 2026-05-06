@@ -65,3 +65,12 @@ Per avviare l'app in locale è necessario eseguire i seguenti step:
 
 ## ⚠️ Attenzione
 Le API key reali non sono presenti nella repository per motivi di sicurezza.
+
+
+> *Per problemi con avvio (es. "ModuleNotFoundError")*
+> Se ricevi un errore che dice che un modulo (come flask o altri) non è stato trovato, segui questi passaggi per usare un ambiente virtuale:
+> 1. Da terminale, torna nella cartella principale di MyWallet 
+> 2. Crea l'ambiente: python -m venv venv
+> 3. Attivalo: .\venv\Scripts\activate (su Windows) o source venv/bin/activate (su Mac/Linux)
+> 4. Installa di nuovo le dipendenze: pip install -r requirements.txt
+> 5. Riprova ad avviare il server (attenzionando che il virtual env sia attivo).
