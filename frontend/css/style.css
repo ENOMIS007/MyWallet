@@ -1223,7 +1223,7 @@ td.importo-negativo { color: var(--negative); font-weight: 500; }
 /* ════════════════════════════════════════════════════
    PAGINA LOGIN
    ════════════════════════════════════════════════════ */
-body {
+body.page-login {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
@@ -1796,6 +1796,7 @@ body {
 }
 
 .reg-back a:hover { text-decoration: underline; }
+
 
 /* ════════════════════════════════════════════════════
    RESPONSIVE

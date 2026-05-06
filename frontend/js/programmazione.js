@@ -12,12 +12,6 @@ let calMese  = new Date().getMonth();  // 0-based
 
 document.addEventListener("DOMContentLoaded", async () => {
 
-    // ── Logout ──────────────────────────────
-    document.getElementById("btn-logout").addEventListener("click", async () => {
-        await logout();
-        window.location.href = "/login.html";
-    });
-
     // ── Email header ─────────────────────────
     const emailEl = document.getElementById("header-email");
     if (emailEl) emailEl.textContent = localStorage.getItem("user_email") || "";
