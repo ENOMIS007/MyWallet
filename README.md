@@ -19,7 +19,8 @@ Per avviare l'app in locale è necessario eseguire i seguenti step:
 
 ### 1. Clonazione:
    
-   È necessario scaricare i file sul proprio dispositivo clonando la repository tramite terminale:
+   È necessario scaricare i file sul proprio dispositivo clonando la repository tramite terminale.
+   Recandosi sempre da terminale nella cartella dove si vuole scaricare i file, eseguire il comando:
    ```bash
    git clone https://github.com/ENOMIS007/MyWallet.git
    ```
