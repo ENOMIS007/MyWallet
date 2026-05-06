@@ -104,7 +104,25 @@ async function handleRegister() {
 
 document.addEventListener("keydown", e => {
     if (e.key !== "Enter") return;
-    const loginVisible = document.getElementById("form-login").style.display !== "none";
-    if (loginVisible) handleLogin();
-    else handleRegister();
+
+    // Se c'è una modale aperta, non fare nulla (lascia gestire alle modali)
+    if (document.querySelector(".modal-overlay") && 
+        window.getComputedStyle(document.querySelector(".modal-overlay")).display !== "none") {
+        return;
+    }
+
+    const formLogin = document.getElementById("form-login");
+    if (!formLogin) return;
+
+    // Controlla quale form è visibile
+    const loginVisible = window.getComputedStyle(formLogin).display !== "none";
+    
+    if (loginVisible) {
+        handleLogin();
+    } else {
+        const formRegister = document.getElementById("form-register");
+        if (formRegister && window.getComputedStyle(formRegister).display !== "none") {
+            handleRegister();
+        }
+    }
 });

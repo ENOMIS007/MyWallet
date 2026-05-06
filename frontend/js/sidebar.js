@@ -46,6 +46,14 @@ document.addEventListener("DOMContentLoaded", () => {
         btnConferma.disabled = inputEmail.value.toLowerCase().trim() !== emailUtente;
     });
 
+    // Supporto tasto Invio
+    inputEmail.addEventListener("keydown", e => {
+        if (e.key === "Enter" && !btnConferma.disabled) {
+            e.preventDefault();
+            btnConferma.click();
+        }
+    });
+
     btnAnnulla.addEventListener("click", chiudiModaleEliminaAccount);
 
     // Chiude cliccando sull'overlay

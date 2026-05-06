@@ -445,6 +445,14 @@ function mostraModaleSaldoIniziale() {
     
     modal.style.display = "flex";
     
+    // Supporto tasto Invio
+    input.addEventListener("keydown", e => {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            btn.click();
+        }
+    });
+    
     btn.onclick = async () => {
         const val = parseFloat(input.value) || 0;
         const isEntrata = val >= 0;
