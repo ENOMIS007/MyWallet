@@ -46,8 +46,9 @@ def analizza_testo():
             '  "categoria_suggerita": stringa (Capitalizzata, es. "Benzina", "Abbigliamento"). '
             "REGOLA CRITICA: Se la spesa è molto specifica (es. benzina, farmacia, stipendio, netflix), "
             "CREA una nuova categoria adatta. Usa una delle categorie 'disponibili' SOLO se descrive "
-            "perfettamente l'acquisto. Sentiti libero di inventare categorie specifiche ma brevi (1-2 parole).\n"
-            '  "data": data in formato YYYY-MM-DD (usa oggi se non specificata)\n'
+            "perfentemente l'acquisto. Sentiti libero di inventare categorie specifiche ma brevi (1-2 parole).\n"
+            '  "data": data in formato YYYY-MM-DD (usa oggi se non specificata). '
+            f"REGOLA MANDATORIA: NON inserire MAI date nel futuro rispetto a oggi ({oggi}).\n"
             '  "descrizione": brevissima descrizione (max 6 parole)\n'
             f"Oggi è {oggi}.\n"
             f"Categorie già esistenti: {lista_cat}."
@@ -66,27 +67,34 @@ def analizza_testo():
         raw = response.choices[0].message.content.strip()
 
         # Pulizia markdown se presente
-        if raw.startswith("```"):
+        if "```" in raw:
             raw = raw.split("```")[1]
             if raw.startswith("json"):
                 raw = raw[4:]
         raw = raw.strip()
 
-        risultato = json.loads(raw)
+        try:
+            risultato = json.loads(raw)
+        except json.JSONDecodeError:
+            return jsonify({"error": "L'IA ha risposto in un formato non leggibile. Riprova con una frase più chiara."}), 500
 
-        # Validazione minimale
+        # Validazione minimale e correzione data futura
         if "importo" not in risultato or "is_entrata" not in risultato:
-            return jsonify({"error": "Risposta AI non valida"}), 500
+            return jsonify({"error": "L'IA non è riuscita a estrarre i dati fondamentali (importo/tipo)."}), 500
+
+        data_estratta = str(risultato.get("data", oggi))
+        # Se l'IA imposta una data futura per errore, la riportiamo a oggi
+        if data_estratta > oggi:
+            data_estratta = oggi
 
         return jsonify({
             "importo":             float(risultato["importo"]),
             "is_entrata":          bool(risultato["is_entrata"]),
             "categoria_suggerita": str(risultato.get("categoria_suggerita", "Altro")),
-            "data":                str(risultato.get("data", oggi)),
+            "data":                data_estratta,
             "descrizione":         str(risultato.get("descrizione", "")),
         })
 
-    except json.JSONDecodeError:
-        return jsonify({"error": "Impossibile interpretare la risposta AI"}), 500
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        print(f"DEBUG AI ERROR: {str(e)}")
+        return jsonify({"error": "Errore di comunicazione con il servizio AI. Verifica la connessione o riprova più tardi."}), 500
