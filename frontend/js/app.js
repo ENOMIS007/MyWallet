@@ -484,6 +484,11 @@ function mostraModaleSaldoIniziale() {
             await caricaSaldo();
             
             modal.style.display = "none";
+            
+            // Avvia il tour guidato per i nuovi utenti
+            if (typeof Tour !== 'undefined') {
+                setTimeout(() => Tour.start(), 500);
+            }
         } catch (err) {
             console.error("Errore salvataggio saldo iniziale", err);
             alert("Si è verificato un errore durante il salvataggio.");
