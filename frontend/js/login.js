@@ -1,11 +1,8 @@
-const BASE_URL = "http://localhost:3000";
-
 // Se già loggato, vai direttamente all'app
 if (localStorage.getItem("access_token") || sessionStorage.getItem("access_token")) {
     window.location.href = "/";
 }
 
-// ── TOGGLE TAB ─────────────────────────────────
 function mostraTab(tab) {
     const isLogin = tab === "login";
     document.getElementById("form-login").style.display    = isLogin ? "flex" : "none";
@@ -26,7 +23,6 @@ function mostraMessaggio(id, testo, tipo) {
     el.className = `login-messaggio ${tipo}`;
 }
 
-// ── LOGIN ──────────────────────────────────────
 async function handleLogin() {
     const email    = document.getElementById("login-email").value.trim();
     const password = document.getElementById("login-password").value;
@@ -41,14 +37,9 @@ async function handleLogin() {
     btn.textContent = "Accesso in corso...";
 
     try {
-        const res  = await fetch(`${BASE_URL}/auth/login`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, password })
-        });
-        const data = await res.json();
+        const data = await login(email, password);
 
-        if (!res.ok) {
+        if (data.error) {
             mostraMessaggio("msg-login", data.error || "Credenziali non valide.", "errore");
             return;
         }
@@ -67,7 +58,6 @@ async function handleLogin() {
     }
 }
 
-// ── REGISTER ───────────────────────────────────
 async function handleRegister() {
     const email     = document.getElementById("reg-email").value.trim();
     const password  = document.getElementById("reg-password").value;
@@ -93,14 +83,9 @@ async function handleRegister() {
     btn.textContent = "Creazione account...";
 
     try {
-        const res  = await fetch(`${BASE_URL}/auth/register`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, password })
-        });
-        const data = await res.json();
+        const data = await register(email, password);
 
-        if (!res.ok) {
+        if (data.error) {
             mostraMessaggio("msg-register", data.error || "Registrazione fallita.", "errore");
             return;
         }
@@ -117,7 +102,6 @@ async function handleRegister() {
     }
 }
 
-// ── INVIO CON ENTER ────────────────────────────
 document.addEventListener("keydown", e => {
     if (e.key !== "Enter") return;
     const loginVisible = document.getElementById("form-login").style.display !== "none";

@@ -110,10 +110,8 @@ def logout():
         return jsonify({"error": str(e)}), 400
 
 
-# DELETE /auth/account — elimina l'account e tutti i dati dell'utente.
-# Grazie al CASCADE configurato sul DB, eliminare l'utente da auth.users
-# cancella automaticamente tutte le righe collegate in transazione,
-# transazione_programmata e categoria. Non serve eliminarle manualmente.
+# DELETE /auth/account
+# Elimina l'account utente. Il CASCADE sul DB pulisce automaticamente i dati correlati.
 @bp.route("/auth/account", methods=["DELETE"])
 def delete_account():
     auth_header = request.headers.get("Authorization", "")

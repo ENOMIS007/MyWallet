@@ -41,7 +41,6 @@ function isSaldoIniziale(nome) {
 
 document.addEventListener("DOMContentLoaded", async () => {
 
-    // ── LOGOUT ──────────────────────────────────
     const btnLogout = document.getElementById("btn-logout");
     if (btnLogout) {
         btnLogout.addEventListener("click", async () => {
@@ -220,9 +219,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             });
     });
 
-    // ══════════════════════════════════════════
     //   SWITCH MODALITÀ: AUTOMATICA / MANUALE
-    // ══════════════════════════════════════════
 
     const btnModeAuto    = document.getElementById("btn-mode-auto");
     const btnModeManuale = document.getElementById("btn-mode-manuale");
@@ -251,9 +248,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     btnModeAuto.addEventListener("click",    () => switchMode("auto"));
     btnModeManuale.addEventListener("click", () => switchMode("manuale"));
 
-    // ══════════════════════════════════════════
     //   AI — LOGICA ANALISI TESTO
-    // ══════════════════════════════════════════
 
     // Stato temporaneo del risultato AI
     let datiAI = null;
@@ -1272,7 +1267,6 @@ function chiudiTuttiIPannelli() {
 }
 
 
-// ── FLATPICKR: adatta larghezza select mese al testo ──
 function adattaLarghezzaMese() {
     const selects = document.querySelectorAll(".flatpickr-monthDropdown-months");
     selects.forEach(select => {
@@ -1285,7 +1279,6 @@ function adattaLarghezzaMese() {
     });
 }
 
-// ── FLATPICKR: sostituisce input anno con select ──
 function trasformaAnnoInSelect(instance) {
     const wrapper = instance.calendarContainer.querySelector(".numInputWrapper");
     if (!wrapper || wrapper.dataset.selectified) return;

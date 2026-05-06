@@ -4,13 +4,8 @@ import os, json
 from datetime import date
 
 bp = Blueprint("ai", __name__)
+from utils import get_token
 
-
-def get_token():
-    auth_header = request.headers.get("Authorization", "")
-    if auth_header.startswith("Bearer "):
-        return auth_header.split(" ", 1)[1]
-    return None
 
 
 # POST /ai/analizza

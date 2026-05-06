@@ -12,11 +12,9 @@ let calMese  = new Date().getMonth();  // 0-based
 
 document.addEventListener("DOMContentLoaded", async () => {
 
-    // ── Email header ─────────────────────────
     const emailEl = document.getElementById("header-email");
     if (emailEl) emailEl.textContent = localStorage.getItem("user_email") || "";
 
-    // ── Flatpickr data nella modale ──────────
     flatpickr("#prog-data", {
         dateFormat: "Y-m-d",
         altInput:   true,
@@ -27,10 +25,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         minDate:    "today"
     });
 
-    // ── Carica dati iniziali ─────────────────
     await caricaProgrammate();
 
-    // ── Navigazione calendario ───────────────
     document.getElementById("cal-prev").addEventListener("click", () => {
         calMese--;
         if (calMese < 0) { calMese = 11; calAnno--; }
@@ -43,23 +39,18 @@ document.addEventListener("DOMContentLoaded", async () => {
         renderCalendario();
     });
 
-    // ── Modale: apri ────────────────────────
     document.getElementById("btn-apri-modale-prog").addEventListener("click", () => {
         apriModale();
     });
 
-    // ── Modale: annulla ──────────────────────
     document.getElementById("btn-annulla-prog").addEventListener("click", chiudiModale);
 
-    // ── Modale: click fuori chiude ───────────
     document.getElementById("modal-nuova-programmata").addEventListener("click", (e) => {
         if (e.target === e.currentTarget) chiudiModale();
     });
 
-    // ── Modale: salva ────────────────────────
     document.getElementById("btn-salva-prog").addEventListener("click", handleSalva);
 
-    // ── Invio con Enter nella modale ─────────
     document.getElementById("modal-nuova-programmata").addEventListener("keydown", (e) => {
         if (e.key === "Enter") handleSalva();
         if (e.key === "Escape") chiudiModale();
@@ -157,17 +148,14 @@ function avanzaData(data, frequenza) {
 
 /** Renderizza il calendario per il mese calAnno/calMese */
 function renderCalendario() {
-    // ── Titolo ───────────────────────────────
     const nomiMesi = [
         "Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno",
         "Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"
     ];
     document.getElementById("cal-title").textContent = `${nomiMesi[calMese]} ${calAnno}`;
 
-    // ── Mappa eventi del mese ────────────────
     const eventMap = buildEventMap(calAnno, calMese);
 
-    // ── Calcolo giorni da mostrare ───────────
     // Il primo giorno del mese (0=Dom → convertiamo a Lun=0)
     const primoDelMese = new Date(calAnno, calMese, 1);
     let offsetInizio = primoDelMese.getDay() - 1;  // Lunedì = 0
@@ -180,7 +168,6 @@ function renderCalendario() {
 
     const oggiStr = dateToStr(new Date());
 
-    // ── Svuota e ricostruisce la griglia ─────
     const grid = document.getElementById("cal-grid");
     grid.innerHTML = "";
 

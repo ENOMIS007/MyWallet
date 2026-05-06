@@ -4,21 +4,8 @@ from datetime import date, timedelta
 from dateutil.relativedelta import relativedelta
 
 bp = Blueprint("programmazione", __name__)
+from utils import get_token, get_user_id
 
-
-def get_token():
-    auth_header = request.headers.get("Authorization", "")
-    if auth_header.startswith("Bearer "):
-        return auth_header.split(" ", 1)[1]
-    return None
-
-
-def get_user_id(token):
-    try:
-        user = supabase.auth.get_user(token)
-        return user.user.id
-    except Exception:
-        return None
 
 
 def calcola_prossima_data(data_corrente: date, frequenza: str) -> date:

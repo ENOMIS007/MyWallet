@@ -8,16 +8,12 @@ SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 SUPABASE_SECRET_KEY = os.getenv("SUPABASE_SECRET_KEY")  # sb_secret_... (Secret API key)
 
-# Client globale (usato solo per auth.sign_up / sign_in / sign_out)
+# Client Supabase globale
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 
 def get_supabase_client(token: str) -> Client:
-    """
-    Crea un client Supabase con il JWT dell'utente iniettato negli header.
-    Necessario per far funzionare la RLS: ogni query deve girare
-    nel contesto dell'utente autenticato, non della service key anonima.
-    """
+    """Restituisce un client Supabase autenticato con il JWT dell'utente per abilitare la RLS."""
     client = create_client(SUPABASE_URL, SUPABASE_KEY)
     client.postgrest.auth(token)
     return client

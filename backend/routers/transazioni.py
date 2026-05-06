@@ -2,23 +2,8 @@ from flask import Blueprint, jsonify, request
 from database import supabase, get_supabase_client
 
 bp = Blueprint("transazioni", __name__)
+from utils import get_token, get_user_id
 
-
-def get_token():
-    """Estrae il JWT dall'header Authorization."""
-    auth_header = request.headers.get("Authorization", "")
-    if auth_header.startswith("Bearer "):
-        return auth_header.split(" ", 1)[1]
-    return None
-
-
-def get_user_id(token):
-    """Ricava lo user_id dal token JWT."""
-    try:
-        user = supabase.auth.get_user(token)
-        return user.user.id
-    except Exception:
-        return None
 
 
 # GET /transazioni — restituisce tutte le transazioni dell'utente

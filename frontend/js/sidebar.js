@@ -1,9 +1,7 @@
-// ══════════════════════════════════════════
 //   SIDEBAR — menu utente + modale elimina account
 //   Caricato da index.html e programmazione.html.
 //   Gestisce tutto ciò che riguarda la sidebar
 //   in un unico posto, senza duplicazioni.
-// ══════════════════════════════════════════
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -11,7 +9,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const trigger = document.getElementById("btn-user-menu");
     const panel   = menu.querySelector(".sidebar-user-panel");
 
-    // ── Toggle dropdown ────────────────────────────
     trigger.addEventListener("click", (e) => {
         e.stopPropagation();
         menu.classList.toggle("aperto");
@@ -23,20 +20,17 @@ document.addEventListener("DOMContentLoaded", () => {
     // Impedisce chiusura cliccando dentro il pannello
     panel.addEventListener("click", (e) => e.stopPropagation());
 
-    // ── Logout ─────────────────────────────────────
     document.getElementById("btn-logout").addEventListener("click", async () => {
         menu.classList.remove("aperto");
         await logout();
         window.location.href = "/login.html";
     });
 
-    // ── Apri modale elimina account ────────────────
     document.getElementById("btn-apri-elimina").addEventListener("click", () => {
         menu.classList.remove("aperto");
         apriModaleEliminaAccount();
     });
 
-    // ── Modale elimina account ─────────────────────
     const modal       = document.getElementById("modal-elimina-account");
     const inputEmail  = document.getElementById("input-conferma-email");
     const btnConferma = document.getElementById("btn-conferma-elimina");
@@ -86,7 +80,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
-// ── Apre la modale e resetta lo stato ──────────────
 function apriModaleEliminaAccount() {
     const modal       = document.getElementById("modal-elimina-account");
     const inputEmail  = document.getElementById("input-conferma-email");

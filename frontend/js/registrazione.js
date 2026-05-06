@@ -1,8 +1,4 @@
-const BASE_URL = "http://localhost:3000";
-
-// ══════════════════════════════════════════
 //   STEP MACHINE
-// ══════════════════════════════════════════
 function goToStep(n) {
     [1, 2, 3].forEach(i => {
         document.getElementById(`panel${i}`).classList.toggle("visible", i === n);
@@ -19,9 +15,7 @@ function goToStep(n) {
     else fermaPolling();
 }
 
-// ══════════════════════════════════════════
 //   CONTROLLA HASH ALL'AVVIO
-// ══════════════════════════════════════════
 window.addEventListener("load", () => {
     const hash   = new URLSearchParams(window.location.hash.substring(1));
     const params = new URLSearchParams(window.location.search);
@@ -49,9 +43,7 @@ window.addEventListener("load", () => {
     }
 });
 
-// ══════════════════════════════════════════
 //   STEP 1: REGISTRAZIONE
-// ══════════════════════════════════════════
 async function handleRegister() {
     const email = document.getElementById("reg-email").value.trim();
     const pass  = document.getElementById("reg-password").value;
@@ -66,14 +58,9 @@ async function handleRegister() {
     btn.textContent = "Creazione account…";
 
     try {
-        const res  = await fetch(`${BASE_URL}/auth/register`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, password: pass })
-        });
-        const data = await res.json();
+        const data = await register(email, pass);
 
-        if (!res.ok) {
+        if (data.error) {
             mostraMsg("msg1", "errore", data.error || "Registrazione fallita.");
             btn.disabled = false;
             btn.textContent = "Crea account";
@@ -93,9 +80,7 @@ async function handleRegister() {
     }
 }
 
-// ══════════════════════════════════════════
 //   STEP 3: TOKEN VERIFICATO
-// ══════════════════════════════════════════
 function processoVerifica(accessToken, refreshToken) {
     try {
         const payload = JSON.parse(atob(accessToken.split(".")[1]));
@@ -122,9 +107,7 @@ function processoVerifica(accessToken, refreshToken) {
     setTimeout(() => { window.location.href = "/"; }, 3200);
 }
 
-// ══════════════════════════════════════════
 //   POLLING VERIFICA EMAIL
-// ══════════════════════════════════════════
 let pollingInterval = null;
 
 function avviaPolling() {
@@ -135,14 +118,9 @@ function avviaPolling() {
         if (!email || !pass) return;
 
         try {
-            const res  = await fetch(`${BASE_URL}/auth/login`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password: pass })
-            });
-            const data = await res.json();
+            const data = await login(email, pass);
 
-            if (res.ok && data.access_token) {
+            if (!data.error && data.access_token) {
                 fermaPolling();
                 processoVerifica(data.access_token, data.refresh_token);
             }
@@ -159,9 +137,7 @@ function fermaPolling() {
     }
 }
 
-// ══════════════════════════════════════════
 //   REINVIA EMAIL
-// ══════════════════════════════════════════
 let cooldown = false;
 
 async function reinviaEmail() {
@@ -178,14 +154,9 @@ async function reinviaEmail() {
     btn.textContent = "Invio…";
 
     try {
-        const res  = await fetch(`${BASE_URL}/auth/resend-verification`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email })
-        });
-        const data = await res.json();
+        const data = await resendVerification(email);
 
-        if (!res.ok) {
+        if (data.error) {
             mostraMsg("msg2", "errore", data.error || "Impossibile reinviare l'email.");
             cooldown = false;
             btn.disabled = false;
@@ -221,9 +192,7 @@ function avviaCountdown(sec) {
     }, 1000);
 }
 
-// ══════════════════════════════════════════
 //   HELPER
-// ══════════════════════════════════════════
 function mostraMsg(id, tipo, testo) {
     const el = document.getElementById(id);
     el.textContent = testo;

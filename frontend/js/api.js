@@ -1,8 +1,6 @@
 const BASE_URL = "http://localhost:3000";
 
-// ══════════════════════════════════════════
 //   TOKEN
-// ══════════════════════════════════════════
 
 function getToken() {
     return localStorage.getItem("access_token") || "";
@@ -15,11 +13,9 @@ function authHeaders() {
     };
 }
 
-// ══════════════════════════════════════════
 //   REFRESH TOKEN
 //   Chiama /auth/refresh e salva i nuovi token.
 //   Se il refresh fallisce, pulisce lo storage e rimanda al login.
-// ══════════════════════════════════════════
 
 let _refreshPromise = null;
 
@@ -67,9 +63,7 @@ function pulisciStorageERedirect() {
     window.location.href = "/login.html";
 }
 
-// ══════════════════════════════════════════
 //   REFRESH PROATTIVO
-// ══════════════════════════════════════════
 
 async function assicuraTokenValido() {
     const token = getToken();
@@ -88,9 +82,7 @@ async function assicuraTokenValido() {
     }
 }
 
-// ══════════════════════════════════════════
 //   FETCH CON REFRESH
-// ══════════════════════════════════════════
 
 async function fetchConRefresh(url, options = {}) {
     await assicuraTokenValido();
@@ -106,15 +98,22 @@ async function fetchConRefresh(url, options = {}) {
     return res;
 }
 
-// ══════════════════════════════════════════
 //   AUTH
-// ══════════════════════════════════════════
 
 async function register(email, password) {
     const response = await fetch(`${BASE_URL}/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password })
+    });
+    return await response.json();
+}
+
+async function resendVerification(email) {
+    const response = await fetch(`${BASE_URL}/auth/resend-verification`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email })
     });
     return await response.json();
 }
@@ -145,18 +144,14 @@ async function deleteAccount() {
     return await response.json();
 }
 
-// ══════════════════════════════════════════
 //   SALDO
-// ══════════════════════════════════════════
 
 async function getSaldo() {
     const response = await fetchConRefresh(`${BASE_URL}/saldo`);
     return await response.json();
 }
 
-// ══════════════════════════════════════════
 //   TRANSAZIONI
-// ══════════════════════════════════════════
 
 async function getTransazioni() {
     const response = await fetchConRefresh(`${BASE_URL}/transazioni`);
@@ -176,9 +171,7 @@ async function addTransazione(importo, idCategoria, isEntrata, data) {
     return await response.json();
 }
 
-// ══════════════════════════════════════════
 //   CATEGORIE
-// ══════════════════════════════════════════
 
 async function getCategorieEntrate() {
     const response = await fetchConRefresh(`${BASE_URL}/categorie/entrate`);
@@ -198,9 +191,7 @@ async function addCategoria(nome, isEntrata) {
     return await response.json();
 }
 
-// ══════════════════════════════════════════
 //   TRANSAZIONI PROGRAMMATE
-// ══════════════════════════════════════════
 
 async function getProgrammate() {
     const response = await fetchConRefresh(`${BASE_URL}/programmate`);
@@ -229,9 +220,7 @@ async function applicaProgrammate() {
     return await response.json();
 }
 
-// ══════════════════════════════════════════
 //   AI — INSERIMENTO INTELLIGENTE
-// ══════════════════════════════════════════
 
 async function analizzaTestoIA(testo, categorie) {
     const response = await fetchConRefresh(`${BASE_URL}/ai/analizza`, {

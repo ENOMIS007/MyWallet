@@ -18,10 +18,8 @@ def static_files(path):
     return send_from_directory("../frontend", path)
 
 
-# ── MIDDLEWARE JWT ──────────────────────────────────────────
-# Prima di ogni richiesta, se c'è un token Authorization,
-# lo inietta nel client Supabase. In questo modo la RLS
-# riconosce l'utente e filtra i dati correttamente.
+# Inietta il token JWT nel client Supabase prima di ogni richiesta.
+# Permette alla RLS di filtrare i dati per utente.
 ROUTE_PUBBLICHE = {"/auth/login", "/auth/register", "/auth/resend-verification"}
 
 @app.before_request
@@ -35,7 +33,7 @@ def inject_jwt():
         supabase.postgrest.auth(token)
 
 
-# ── BLUEPRINT ───────────────────────────────────────────────
+# Registrazione dei blueprint (Route)
 from routers import categorie, transazioni, auth, programmazione, ai
 
 app.register_blueprint(auth.bp)
