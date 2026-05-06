@@ -34,7 +34,6 @@ Per avviare l'app in locale è necessario eseguire i seguenti step:
    Installare tutte le dipendenze tramite i comandi:
    ```bash
    pip install -r requirements.txt
-   npm install
    ```
 
    
