@@ -28,7 +28,7 @@
 }
 
 .tour-tooltip {
-    position: fixed;
+    position: absolute;
     z-index: 10000;
     background: var(--bg-card);
     border: 1px solid var(--border-accent);
@@ -147,11 +147,36 @@
 .tour-tooltip::before {
     content: '';
     position: absolute;
-    width: 12px;
-    height: 12px;
+    width: 14px;
+    height: 14px;
     background: var(--bg-card);
     border-left: 1px solid var(--border-accent);
     border-top: 1px solid var(--border-accent);
     transform: rotate(45deg);
-    display: none; /* Gestito via JS in base alla posizione */
+    z-index: -1;
+}
+
+/* Posizioni freccia */
+.tour-pos-right::before {
+    left: -8px;
+    top: 50%;
+    transform: translateY(-50%) rotate(-45deg);
+}
+
+.tour-pos-bottom::before {
+    top: -8px;
+    left: 50%;
+    transform: translateX(-50%) rotate(45deg);
+}
+
+.tour-pos-top::before {
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%) rotate(225deg);
+}
+
+.tour-pos-left::before {
+    right: -8px;
+    top: 50%;
+    transform: translateY(-50%) rotate(135deg);
 }
