@@ -32,7 +32,7 @@ Per avviare l'app in locale è necessario eseguire i seguenti step:
 
 ### 2. Installazione dipendenze:
    
-   Installare tutte le dipendenze tramite i comandi:
+   Installare tutte le dipendenze tramite il comando:
    ```bash
    pip install -r requirements.txt
    ```
